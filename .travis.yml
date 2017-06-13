@@ -14,6 +14,6 @@ install:
     - pip install tox
     - pip install coveralls
 script:
-    - tox -e $TRAVIS_PYTHON_VERSION-$TOX_ENV
+    - tox -e $TOX_ENV-$TRAVIS_PYTHON_VERSION
 after_success:
     - coveralls
