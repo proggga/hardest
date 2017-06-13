@@ -3,9 +3,9 @@ python:
     - "2.7"
     - "3.6"
 env:
-    - TOX_ENV=${TRAVIS_PYTHON_VERSION}-metrics
-    - TOX_ENV=${TRAVIS_PYTHON_VERSION}-lint
-    - TOX_ENV=${TRAVIS_PYTHON_VERSION}-coverage
+    - TOX_ENV=metrics
+    - TOX_ENV=lint
+    - TOX_ENV=coverage
 before_install:
   - pip install --upgrade pytest
   - pip install six
@@ -14,6 +14,6 @@ install:
     - pip install tox
     - pip install coveralls
 script:
-    - tox -e $TOX_ENV
+    - tox -e $TRAVIS_PYTHON_VERSION-$TOX_ENV
 after_success:
     - coveralls
