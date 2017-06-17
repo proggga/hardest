@@ -8,4 +8,9 @@ setup(name='hardest',
       description='Hardcore testing tool',
       author='Mikhail Fesenko',
       author_email='proggga@gmail.com',
-      packages=['hardest'])
+      packages=['hardest'],
+      entry_points={
+          'console_scripts': [
+              'hardest = hardest.command_line:main',
+          ],
+      })
