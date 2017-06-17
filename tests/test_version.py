@@ -1,7 +1,7 @@
 """TestModule which tests main function"""
 import unittest
 
-import hardestlib.command_line as commandline
+import hardest.command_line as commandline
 import mock
 
 
@@ -10,7 +10,7 @@ class TestUsage(unittest.TestCase):
 
     def test_command_line_exists(self):
         """Test command_line entry point import/exists"""
-        sys_path = 'hardestlib.command_line.sys'
+        sys_path = 'hardest.command_line.sys'
         print_path = 'argparse.ArgumentParser._print_message'
 
         version = "hardest 0.0.1\n"

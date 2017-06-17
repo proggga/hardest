@@ -1,7 +1,7 @@
 """TestModule which tests main function"""
 import unittest
 
-import hardestlib.command_line as commandline
+import hardest.command_line as commandline
 import mock
 
 
@@ -19,7 +19,7 @@ class TestHelpCommandLine(unittest.TestCase):
                  "  show program's version number and exit\n"
                  "  --hello      "
                  "  type hello to get world\n")
-        sys_path = 'hardestlib.command_line.sys'
+        sys_path = 'hardest.command_line.sys'
         print_path = 'argparse.ArgumentParser._print_message'
         with mock.patch(sys_path) as patch:
             patch.argv = ['hardest', '-h']

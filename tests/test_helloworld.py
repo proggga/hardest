@@ -1,7 +1,7 @@
 """TestModule which tests hello"""
 import unittest
 
-import hardestlib.command_line as commandline
+import hardest.command_line as commandline
 import mock
 
 
@@ -11,7 +11,7 @@ class Testhelloworld(unittest.TestCase):
     def test_world_command(self):
         """Test"""
 
-        sys_path = 'hardestlib.command_line.sys'
+        sys_path = 'hardest.command_line.sys'
         print_path = 'argparse.ArgumentParser._print_message'
         with mock.patch(sys_path) as patch:
             patch.argv = ['hardest', '--hello']
@@ -23,7 +23,7 @@ class Testhelloworld(unittest.TestCase):
     def test_home_command(self):
         """Test"""
 
-        sys_path = 'hardestlib.command_line.sys'
+        sys_path = 'hardest.command_line.sys'
         print_path = 'argparse.ArgumentParser._print_message'
         with mock.patch(sys_path) as patch:
             patch.argv = ['hardest']
