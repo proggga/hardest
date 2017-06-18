@@ -1,4 +1,4 @@
-"""TestModule which tests main function"""
+"""TestModule which tests main function."""
 import os
 import unittest
 
@@ -7,15 +7,15 @@ import mock
 
 
 class TestHelpCommandLine(unittest.TestCase):
-    """Tests help command"""
+    """Tests help command."""
 
     def test_command(self):
-        """Hello command"""
+        """Hello command."""
         os.system('hardest')
         self.assertTrue(2 == 2)
 
     def test_help_command(self):
-        """Test command_line entry point import/exists"""
+        """Test command_line entry point import/exists."""
         usage = ("usage: pytest.py [-h] [--version] [--hello]\n\n"
                  "Hardest - hard test utils\n"
                  "\noptional arguments:\n"

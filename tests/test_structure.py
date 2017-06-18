@@ -1,12 +1,12 @@
-"""TestModule which tests module structure"""
+"""TestModule which tests module structure."""
 import unittest
 
 
 class TestFilesStructure(unittest.TestCase):
-    """Tests files exists and imports"""
+    """Tests files exists and imports."""
 
     def test_command_line_entrypoint(self):
-        """Test command_line entry point import/exists"""
+        """Test command_line entry point import/exists."""
         try:
             import hardest.command_line
             self.assertTrue(hardest.command_line)

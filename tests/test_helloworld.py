@@ -1,4 +1,4 @@
-"""TestModule which tests hello"""
+"""TestModule which tests hello."""
 import unittest
 
 import hardest.command_line as commandline
@@ -6,11 +6,10 @@ import mock
 
 
 class Testhelloworld(unittest.TestCase):
-    """Tests hello command"""
+    """Tests hello command."""
 
     def test_world_command(self):
-        """Test"""
-
+        """Test hello."""
         sys_path = 'hardest.command_line.sys'
         print_path = 'argparse.ArgumentParser._print_message'
         with mock.patch(sys_path) as patch:
@@ -21,8 +20,7 @@ class Testhelloworld(unittest.TestCase):
                 self.assertEqual(code, 0)
 
     def test_home_command(self):
-        """Test"""
-
+        """Test default start."""
         sys_path = 'hardest.command_line.sys'
         print_path = 'argparse.ArgumentParser._print_message'
         with mock.patch(sys_path) as patch:

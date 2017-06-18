@@ -1,8 +1,14 @@
 mock==2.0.0
+hacking==0.13.0
+flake8==3.3.0
+flake8_docstrings==1.1.0
+pyflakes==1.5.0
+mccabe==0.6.1
 pylint==1.7.1
 pytest==3.1.0
 pytest-cov==2.4.0
 pytest-flake8==0.8.1
 pytest-pylint==0.7.1
 pytest-mccabe==0.1
+radon==1.5.0
 xenon==0.5.0

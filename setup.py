@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Setup project"""
+"""Setup project."""
 
 from setuptools import setup
 

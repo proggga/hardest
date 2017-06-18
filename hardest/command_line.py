@@ -1,5 +1,6 @@
-"""Main command line options"""
+"""Main command line options."""
 import sys
+
 import argparse
 
 SUCCESSCODE = 0
@@ -8,7 +9,7 @@ ERRORCODE = 2
 
 
 def main():
-    """Commandline Entrypoint"""
+    """Commandline Entrypoint."""
     parser = argparse.ArgumentParser(add_help=True,
                                      description='Hardest - hard test utils')
     parser.add_argument('--version', '-v', action='version',
