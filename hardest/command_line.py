@@ -14,9 +14,19 @@ def main():
                                      description='Hardest - hard test utils')
     parser.add_argument('--version', '-v', action='version',
                         version=sys.argv[0] + ' 0.0.1')
-    parser.add_argument('--hello', dest='hello',
+    parser.add_argument('--hello', dest='--hello',
                         action='store_true',
                         help='type hello to get world')
+    parser.add_argument('--init', dest='--init',
+                        action='store_true',
+                        help='init configs in new project')
+
     args = parser.parse_args(args=sys.argv[1:])
     args_dict = vars(args)
-    return SUCCESSCODE, 'world!' if args_dict['hello'] else 'home'
+    main_exit('world!' if args_dict['--hello'] else 'home', SUCCESSCODE)
+
+
+def main_exit(message, exitcode):
+    """Exit with message and code."""
+    print("", message)
+    sys.exit(exitcode)

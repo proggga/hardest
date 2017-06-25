@@ -1,8 +1,9 @@
 """TestModule which tests hello."""
 import unittest
 
-import hardest.command_line as commandline
-import mock
+from subprocess import Popen
+from subprocess import PIPE
+import re
 
 
 class Testhelloworld(unittest.TestCase):
@@ -10,22 +11,7 @@ class Testhelloworld(unittest.TestCase):
 
     def test_world_command(self):
         """Test hello."""
-        sys_path = 'hardest.command_line.sys'
-        print_path = 'argparse.ArgumentParser._print_message'
-        with mock.patch(sys_path) as patch:
-            patch.argv = ['hardest', '--hello']
-            with mock.patch(print_path):
-                code, message = commandline.main()
-                self.assertEqual(message, 'world!')
-                self.assertEqual(code, 0)
-
-    def test_home_command(self):
-        """Test default start."""
-        sys_path = 'hardest.command_line.sys'
-        print_path = 'argparse.ArgumentParser._print_message'
-        with mock.patch(sys_path) as patch:
-            patch.argv = ['hardest']
-            with mock.patch(print_path):
-                code, message = commandline.main()
-                self.assertEqual(message, 'home')
-                self.assertEqual(code, 0)
+        process = Popen(['hardest', '--hello'], stdout=PIPE, stderr=PIPE)
+        stdout, stderr = process.communicate()
+        self.assertTrue(re.search(r'world!', str(stdout)))
+        self.assertEqual(stderr, b'')
