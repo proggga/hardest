@@ -8,7 +8,10 @@ setup(name='hardest',
       description='Hardcore testing tool',
       author='Mikhail Fesenko',
       author_email='proggga@gmail.com',
-      packages=['hardest'],
+      include_package_data=True,
+      package_data={
+          'hardest': ['templates/*.jn2'],
+      },
       entry_points={
           'console_scripts': [
               'hardest = hardest.command_line:main',
