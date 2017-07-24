@@ -1,9 +1,9 @@
 """TestModule which tests hello."""
 import unittest
 
-from subprocess import Popen
-from subprocess import PIPE
 import re
+from subprocess import PIPE
+from subprocess import Popen
 
 
 class Testhelloworld(unittest.TestCase):
@@ -13,6 +13,7 @@ class Testhelloworld(unittest.TestCase):
         """Test hello."""
         process = Popen(['hardest', '--hello'], stdout=PIPE, stderr=PIPE)
         stdout, stderr = process.communicate()
-        print(str(stdout))
+        print(str(stdout), '')
         self.assertTrue(re.search(r'world!', str(stdout)))
+        self.assertTrue(re.search(r'Progga', str(stdout)))
         self.assertEqual(stderr, b'')

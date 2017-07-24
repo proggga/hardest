@@ -2,9 +2,10 @@
 import sys
 
 import argparse
-
 import pkg_resources
+
 from jinja2 import Template
+
 
 SUCCESSCODE = 0
 WARNINGCODE = 1
@@ -31,9 +32,11 @@ def main():
     # Do not use os.path.join()
     resource_path = '/'.join(('templates', 'tox.ini.jn2'))
 
-    template_text = pkg_resources.resource_string(package_name, resource_path)
-    template = Template(template_text)
-    print(template.render(), '')
+    template_bytes = pkg_resources.resource_string(package_name, resource_path)
+    template_content = str(template_bytes)
+    template = Template(template_content)
+    # template.filename(filename)
+    print(str(template.render(username='Progga')), '')
 
     main_exit('world!' if args_dict['--hello'] else 'home', SUCCESSCODE)
 
