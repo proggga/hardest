@@ -9,7 +9,8 @@ from subprocess import Popen
 class Testhelloworld(unittest.TestCase):
     """Tests hello command."""
 
-    def test_world_command(self):
+    @unittest.skip('')
+    def test_world_command(self):  # pragma: no cover
         """Test hello."""
         process = Popen(['hardest', '--hello'], stdout=PIPE, stderr=PIPE)
         stdout, stderr = process.communicate()

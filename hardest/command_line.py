@@ -2,10 +2,6 @@
 import sys
 
 import argparse
-import pkg_resources
-
-from jinja2 import Template
-
 
 SUCCESSCODE = 0
 WARNINGCODE = 1
@@ -27,17 +23,9 @@ def main():
 
     args = parser.parse_args(args=sys.argv[1:])
     args_dict = vars(args)
-    package_name = 'hardest'
-
-    # Do not use os.path.join()
-    resource_path = '/'.join(('templates', 'tox.ini.jn2'))
-
-    template_bytes = pkg_resources.resource_string(package_name, resource_path)
-    template_content = str(template_bytes)
-    template = Template(template_content)
-    # template.filename(filename)
-    print(str(template.render(username='Progga')), '')
-
+    # package_name = 'hardest'
+    # resource_path = '/'.join(('templates', 'tox.ini.jn2'))
+    #
     main_exit('world!' if args_dict['--hello'] else 'home', SUCCESSCODE)
 
 
