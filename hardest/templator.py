@@ -17,7 +17,7 @@ class Templator(object):
         # type: (str) -> None
         self.package_name = package_name
 
-    def render(self, template_name, **kwargs):  # pragma: nocover
+    def render(self, template_name, **kwargs):
         """Render by template_name."""
         # type: (str, Optional[Dict[str]]) -> str
 
@@ -35,15 +35,16 @@ class Templator(object):
         """Get template path."""
         # type: (str) -> str
         try:
-            if pkg_resources.resource_exists(self.package_name,
-                                             template_name):
-                return pkg_resources.resource_filename(self.package_name,
-                                                       template_name)
+            return pkg_resources.resource_filename(self.package_name,
+                                                   template_name)
         except ImportError:
+            print('import')
             message = ('Package "{}" not found'
                        .format(self.package_name))
             raise TemplateNotFoundException(message)
-        else:
-            message = ('Template "{}" not found in package "{}"'
-                       .format(template_name, self.package_name))
-            raise TemplateNotFoundException(message)
+        except Exception as ex:
+            pass
+        print('hello')
+        message = ('Template "{}" not found in package "{}"'
+                   .format(template_name, self.package_name))
+        raise TemplateNotFoundException(message)

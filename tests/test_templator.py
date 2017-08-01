@@ -1,6 +1,8 @@
 """Test templator class."""
 import unittest
 
+import mock
+
 from hardest.exceptions import TemplateNotFoundException
 from hardest.templator import Templator
 
@@ -37,3 +39,15 @@ class TemplatorTestCase(unittest.TestCase):
         template_path = 'templates/NOTEXIST.jn2'
         with self.assertRaises(TemplateNotFoundException):
             instance.get_template_path(template_path)
+
+    def test_render(self):
+        """Test render method."""
+        package_name = 'hardest'
+        instance = Templator(package_name)
+        args = {'first': 'TEXT1', 'second': 'DATA'}
+        mock_path = 'hardest.templator.Templator.get_template_path'
+        with mock.patch(mock_path) as patch:
+            file_path = 'tests/fixtures/template.jn2'
+            patch.return_value = file_path
+            content = instance.render(file_path, **args)
+            self.assertEqual('startTEXT1end|startDATAend', content)
