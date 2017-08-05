@@ -2,6 +2,7 @@
 from typing import List  # noqa pylint: disable=unused-import
 from typing import Optional  # noqa pylint: disable=unused-import
 
+import os
 import pkg_resources
 
 from jinja2 import Template
@@ -35,16 +36,14 @@ class Templator(object):
         """Get template path."""
         # type: (str) -> str
         try:
-            return pkg_resources.resource_filename(self.package_name,
-                                                   template_name)
+            file_name = pkg_resources.resource_filename(self.package_name,
+                                                        template_name)
+            if os.path.exists(file_name):
+                return file_name
         except ImportError:
-            print('import')
             message = ('Package "{}" not found'
                        .format(self.package_name))
             raise TemplateNotFoundException(message)
-        except Exception as ex:
-            pass
-        print('hello')
         message = ('Template "{}" not found in package "{}"'
                    .format(template_name, self.package_name))
         raise TemplateNotFoundException(message)

@@ -1,4 +1,6 @@
 """Test templator class."""
+import random
+import string
 import unittest
 
 import mock
@@ -44,10 +46,13 @@ class TemplatorTestCase(unittest.TestCase):
         """Test render method."""
         package_name = 'hardest'
         instance = Templator(package_name)
-        args = {'first': 'TEXT1', 'second': 'DATA'}
+        first = ''.join(random.sample(string.ascii_letters, 15))
+        second = ''.join(random.sample(string.ascii_letters, 15))
+        args = {'first': first, 'second': second}
         mock_path = 'hardest.templator.Templator.get_template_path'
         with mock.patch(mock_path) as patch:
             file_path = 'tests/fixtures/template.jn2'
             patch.return_value = file_path
             content = instance.render(file_path, **args)
-            self.assertEqual('startTEXT1end|startDATAend', content)
+            self.assertEqual('start{}end|start{}end'.format(first, second),
+                             content)
