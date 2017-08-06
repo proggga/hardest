@@ -16,7 +16,7 @@ class Templator(object):
     def __init__(self, package_name):
         """Init constructor."""
         # type: (str) -> None
-        self.package_name = package_name
+        self.package_name = package_name  # type: str
 
     def render(self, template_name, **kwargs):
         """Render by template_name."""
