@@ -1,5 +1,6 @@
 """Templator class which helps render templates."""
-from typing import List  # noqa pylint: disable=unused-import
+from typing import Dict  # noqa pylint: disable=unused-import
+from typing import Any  # noqa pylint: disable=unused-import
 from typing import Optional  # noqa pylint: disable=unused-import
 
 import os
@@ -19,7 +20,7 @@ class Templator(object):
 
     def get_template(self, template_name, context=None):
         """Render by template_name."""
-        # type: (str, Optional[Dict[str]]) -> str
+        # type: (str, Optional[Dict[str, Any]]) -> str
         if not context:
             context = {}
         file_path = self.get_template_path(template_name)

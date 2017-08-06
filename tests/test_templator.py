@@ -59,3 +59,13 @@ class TemplatorTestCase(unittest.TestCase):
         instance = hardest.Templator(self.package_name)
         template = instance.get_template(self.template_path)
         self.assertIsInstance(template, hardest.Template)
+
+    def test_get_template_no_exists(self):
+        """Test get template instance without context."""
+        import hardest
+        import hardest.exceptions
+
+        instance = hardest.Templator(self.package_name)
+        template_path = 'NOTEXIST.jn2'
+        with self.assertRaises(hardest.exceptions.TemplateNotFoundException):
+            instance.get_template(template_path)
