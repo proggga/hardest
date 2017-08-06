@@ -4,3 +4,4 @@ __pycache__
 .tox
 /hardest.egg-info/
 *.pyc
+*$py.class
