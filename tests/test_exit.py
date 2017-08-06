@@ -1,7 +1,7 @@
 """TestModule which tests main function."""
 import unittest
 
-import hardest.command_line as commandline
+import hardest.command_line
 import mock
 
 
@@ -16,5 +16,5 @@ class TestHelloAgain(unittest.TestCase):
         with mock.patch(sys_path) as patch:
             patch.argv = ['hardest', '--hello']
             with mock.patch(exit_path) as exitpatch:
-                commandline.main()
+                hardest.command_line.main()
                 exitpatch.assert_called_once_with('world!', 0)

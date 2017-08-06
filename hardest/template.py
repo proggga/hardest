@@ -5,7 +5,7 @@ import os
 from typing import Any  # noqa pylint: disable=unused-import
 from typing import Dict  # noqa pylint: disable=unused-import
 
-import hardest.exceptions
+
 import jinja2
 
 
@@ -22,6 +22,7 @@ class Template(object):  # pylint: disable=too-few-public-methods
         """Render template."""
         # type () -> str
         if not os.path.exists(self.file_path):
+            import hardest.exceptions
             message = ('Path "{}" not exists.'
                        .format(self.file_path))
             raise hardest.exceptions.TemplateNotFoundException(message)
