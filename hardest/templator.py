@@ -5,7 +5,7 @@ from typing import Optional  # noqa pylint: disable=unused-import
 import os
 import pkg_resources
 
-from jinja2 import Template
+import jinja2
 
 from hardest.exceptions import TemplateNotFoundException
 
@@ -28,7 +28,7 @@ class Templator(object):
         template_content = str(file_handler.read())
         file_handler.close()
 
-        template = Template(template_content)
+        template = jinja2.Template(template_content)
         rendered_content = str(template.render(**kwargs))
         return rendered_content
 
