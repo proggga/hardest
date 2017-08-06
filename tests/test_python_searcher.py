@@ -17,6 +17,46 @@ import unittest
 class PythonSearcherTestCase(unittest.TestCase):
     """Test case for it."""
 
+    def test_popen(self):
+        """Test."""
+        import subprocess
+        import os
+        my_env = os.environ
+        my_env["PYTHONUNBUFFERED"] = "True"
+        import pty
+        master_fd, slave_fd = pty.openpty()
+
+        proc = subprocess.Popen(['python'],
+                                # preexec_fn=os.setsid,
+                                stdin=slave_fd,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                # executable='/usr/bin/python',
+                                # env=my_env,
+                                # timeout=True,
+                                # universal_newlines=True,
+                                # shell=True)
+                                shell=False)
+        pin = os.fdopen(master_fd, 'w')
+        pin.write('exit(42)\n')
+        # print(proc.stdout.read())
+        # print(proc.stdout.read())
+        # print(proc.stdout.read())
+        # help(proc)
+        import time
+        # print(proc.stdout.readline())
+        # time.sleep(1)
+        # print(proc.stderr.read())
+        # slave_fd.write('exit(1)')
+        stdout, stderr = proc.communicate()
+        print(proc.pid, proc.returncode)
+        # time.sleep(10)
+        print(stdout, stderr)
+        print(stderr)
+
+
+
+    @unittest.skip('skipped this case')
     def test_whereis(self):
         import subprocess
         import os
@@ -52,6 +92,7 @@ class PythonSearcherTestCase(unittest.TestCase):
                 continue
             for ver in new_list:
                 try:
+
                     raw_result = subprocess.check_output([ver, '-c', '"import os; print(os.__file__)"'], stderr=subprocess.STDOUT)
                     raw_result = raw_result.decode()
                     print(raw_result)
