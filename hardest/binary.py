@@ -26,7 +26,7 @@ class Binary(object):  # pylint: disable=too-few-public-methods
             except CalledProcessError:
                 return 'Unknown'
 
-            decoded_result = raw_result.decode()  # type: str
+            decoded_result = str(raw_result.decode())  # type: str
             if not decoded_result:
                 return 'Unknown'
 
