@@ -10,11 +10,7 @@ matrix:
   include:
     - python: "3.6"
       env: TOX_ENV=mypy
-before_install:
-  - pip install --upgrade pytest
-  - pip install six
 install:
-  - pip install -r requirements.txt
   - pip install tox
   - pip install coveralls
 script:
