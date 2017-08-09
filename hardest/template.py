@@ -13,14 +13,16 @@ class Template(object):  # pylint: disable=too-few-public-methods
     """Represents tepmplate which can be rendered."""
 
     def __init__(self, file_path, context):
-        """Constructor."""
         # type: (str, Dict[str, Any]) -> None
+        """Constructor."""
+
         self.file_path = file_path  # type: str
         self.context = context  # type: Dict[str, Any]
 
     def render(self):
-        """Render template."""
         # type () -> str
+        """Render template."""
+
         if not os.path.exists(self.file_path):
             import hardest.exceptions
             message = ('Path "{}" not exists.'
