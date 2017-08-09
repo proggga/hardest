@@ -2,7 +2,7 @@
 import unittest
 
 import hardest.command_line as commandline
-import mock
+import mock  # type: ignore
 
 
 class TestUsage(unittest.TestCase):

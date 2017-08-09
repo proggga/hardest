@@ -26,7 +26,7 @@ class Templator(object):
 
         if not context:
             context = {}
-        file_path = self.get_template_path(template_name)
+        file_path = self.get_template_path(template_name)  # type: str
         return hardest.template.Template(file_path, context)
 
     def get_template_path(self, template_name):
@@ -34,6 +34,7 @@ class Templator(object):
         """Get template path."""
 
         try:
+            file_name = ''  # type: str
             file_name = pkg_resources.resource_filename(self.package_name,
                                                         template_name)
             if os.path.exists(file_name):

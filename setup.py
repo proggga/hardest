@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Setup project."""
 
-from setuptools import setup
+from setuptools import setup  # type: ignore
 
 setup(name='hardest',
       version='0.0.1a',

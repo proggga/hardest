@@ -2,7 +2,7 @@
 import unittest
 
 import hardest.command_line
-import mock
+import mock  # type: ignore
 
 
 class TestHelloAgain(unittest.TestCase):
