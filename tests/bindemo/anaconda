@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+echo -n "" >&2
+echo "Anaconda test.3.1" >&1
+exit 0

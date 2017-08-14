@@ -11,7 +11,11 @@ Should search next python implementations:
     pyston
     stackless
 """
+# import os
+
 import unittest
+
+# import mock
 
 
 class PythonSearcherTestCase(unittest.TestCase):
@@ -21,6 +25,10 @@ class PythonSearcherTestCase(unittest.TestCase):
         """Test version search properly."""
         from hardest.python_searcher import PythonSearcher
         instance = PythonSearcher()
+        # env = os.environ.copy()
+        # # with mock.patch()
+        # my_env["PYTHONPATH"] = os.getcwd()+'/tests/bindemo/'
+        # my_env["PATH"] = os.getcwd()+'/tests/bindemo/'+ ':' + my_env["PATH"]
         paths = [
             '/usr/bin/python',
             '/usr/bin/python2',

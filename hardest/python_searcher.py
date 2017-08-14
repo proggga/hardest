@@ -28,6 +28,7 @@ class PythonSearcher(object):
     python_search_list = (
         'python',
         'ironpython',
+        'conda',
         'anaconda',
         'miniconda',
         'jython',
@@ -60,8 +61,9 @@ class PythonSearcher(object):
     def get_valid_files(self, version_to_search):
         # type: (str) -> Set[str]
         """Get binaries path for python versions."""
-        command = ['whereis', version_to_search]  # type: List[str]
-        raw_output = check_output(command)  # type: bytes
+        command = ['/usr/bin/whereis', version_to_search]  # type: List[str]
+        environment = os.environ.copy()
+        raw_output = check_output(command, env=environment)  # type: bytes
         decoded_output = str(raw_output.decode())  # type: str
         front_unattended_str = '{}:'.format(version_to_search)
         cropped_output = decoded_output.replace(front_unattended_str, '')

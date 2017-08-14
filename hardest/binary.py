@@ -31,6 +31,8 @@ class Binary(object):  # pylint: disable=too-few-public-methods
                                       stderr=STDOUT)  # type: ignore
         except CalledProcessError:
             return 'Unknown'
+        except OSError:
+            return 'Error'
 
         decoded_result = str(raw_result.decode())  # type: str
         if not decoded_result:
