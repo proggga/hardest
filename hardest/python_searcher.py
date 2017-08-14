@@ -51,14 +51,14 @@ class PythonSearcher(object):
             files = self.get_valid_files(version_to_search)
             if not files:
                 continue
-            valid_files_list.update(files)
-
+            valid_files_list.update(set(files))
+        print(valid_files_list)
         self.get_python_versions(valid_files_list)
 
         return self.found_versions
 
     def get_valid_files(self, version_to_search):
-        # type: (str) -> List[str]
+        # type: (str) -> Set[str]
         """Get binaries path for python versions."""
         command = ['whereis', version_to_search]  # type: List[str]
         raw_output = check_output(command)  # type: bytes
@@ -71,9 +71,8 @@ class PythonSearcher(object):
         files_list = output.split(' ')
         files_set = set(files_list)
         files_set.add(sys.executable)
-        print(files_set)
-        return list(set(filepath for filepath in files_set
-                        if self._valid_path(filepath)))
+        return set(filepath for filepath in files_set
+                        if self._valid_path(filepath))
 
     @staticmethod
     def _valid_path(some_file):
