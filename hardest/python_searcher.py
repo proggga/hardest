@@ -68,8 +68,8 @@ class PythonSearcher(object):
         files_list = output.split(' ')
         files_set = set(files_list)
         files_set.add(sys.executable)
-        print(files_list)
-        return [filepath for filepath in files_list
+        print(files_set)
+        return [filepath for filepath in files_set
                 if self._valid_path(filepath)]
 
     @staticmethod
