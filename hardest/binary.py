@@ -26,6 +26,7 @@ class Binary(object):  # pylint: disable=too-few-public-methods
         # type: () -> str
         raw_result = b''  # type: bytes
         try:
+            print('exec', self.path)
             raw_result = check_output([self.path, '-V'],
                                       stderr=STDOUT)  # type: ignore
         except CalledProcessError:

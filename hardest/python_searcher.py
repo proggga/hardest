@@ -65,6 +65,7 @@ class PythonSearcher(object):
         cropped_output = decoded_output.replace(front_unattended_str, '')
         output = cropped_output.strip()
         files_list = output.split(' ')
+        print(files_list)
         return [filepath for filepath in files_list
                 if self._valid_path(filepath)]
 
