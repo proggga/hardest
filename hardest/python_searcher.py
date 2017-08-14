@@ -5,6 +5,7 @@ versions for executing and returns data with version and
 binaries.
 """
 import os
+import sys
 
 from itertools import groupby
 from operator import methodcaller
@@ -65,6 +66,8 @@ class PythonSearcher(object):
         cropped_output = decoded_output.replace(front_unattended_str, '')
         output = cropped_output.strip()
         files_list = output.split(' ')
+        files_set = set(files_list)
+        files_set.add(sys.executable)
         print(files_list)
         return [filepath for filepath in files_list
                 if self._valid_path(filepath)]
