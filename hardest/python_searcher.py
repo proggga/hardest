@@ -15,6 +15,7 @@ from typing import List      # noqa pylint: disable=unused-import
 from typing import Union     # noqa pylint: disable=unused-import
 from typing import Dict      # noqa pylint: disable=unused-import
 from typing import Tuple     # noqa pylint: disable=unused-import
+from typing import Set       # noqa pylint: disable=unused-import
 
 from subprocess import check_output
 
@@ -45,12 +46,12 @@ class PythonSearcher(object):
     def search(self):
         # type: () -> List[PythonVersion]
         """Search python versino and return list of versions."""
-        valid_files_list = []  # type: List[str]
+        valid_files_list = set()  # type: Set[str]
         for version_to_search in self.python_search_list:  # type: str
-            file_list = self.get_valid_files(version_to_search)
-            if not file_list:
+            files = self.get_valid_files(version_to_search)
+            if not files:
                 continue
-            valid_files_list.extend(file_list)
+            valid_files_list.update(files)
 
         self.get_python_versions(valid_files_list)
 
@@ -62,15 +63,17 @@ class PythonSearcher(object):
         command = ['whereis', version_to_search]  # type: List[str]
         raw_output = check_output(command)  # type: bytes
         decoded_output = str(raw_output.decode())  # type: str
-        front_unattended_str = '{}: '.format(version_to_search)
+        front_unattended_str = '{}:'.format(version_to_search)
         cropped_output = decoded_output.replace(front_unattended_str, '')
         output = cropped_output.strip()
+        if not output:
+            return []
         files_list = output.split(' ')
         files_set = set(files_list)
         files_set.add(sys.executable)
         print(files_set)
-        return [filepath for filepath in files_set
-                if self._valid_path(filepath)]
+        return list(set(filepath for filepath in files_set
+                        if self._valid_path(filepath)))
 
     @staticmethod
     def _valid_path(some_file):
@@ -92,8 +95,9 @@ class PythonSearcher(object):
                                             key=methodcaller('version'))
         for str_python_ver, bins_iterator in groupped_version_iterator:
             python_version = PythonVersion(version=str_python_ver,
-                                           binaries=[bin_inst.path for bin_inst
-                                                     in bins_iterator])
+                                           binaries=set(bin_inst.path
+                                                        for bin_inst
+                                                        in bins_iterator))
             if str_python_ver == 'Unknown':
                 self.bad_versions.append(python_version)
             else:
