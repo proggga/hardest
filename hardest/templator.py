@@ -15,15 +15,15 @@ class Templator(object):
 
     def __init__(self, package_name):
         # type: (str) -> None
+        """Templator constructor."""
         self.package_name = package_name  # type: str
 
     def get_template(self,
                      template_name,  # type: str
                      context=None    # type: Dict[str, Any]
-                    ):
+                    ):  # noqa
         # type: (...) -> hardest.template.Template
         """Render by template_name."""
-
         if not context:
             context = {}
         file_path = self.get_template_path(template_name)  # type: str
@@ -32,7 +32,6 @@ class Templator(object):
     def get_template_path(self, template_name):
         # type: (str) -> str
         """Get template path."""
-
         try:
             file_name = ''  # type: str
             file_name = pkg_resources.resource_filename(self.package_name,

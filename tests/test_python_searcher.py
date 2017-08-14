@@ -17,69 +17,36 @@ import unittest
 class PythonSearcherTestCase(unittest.TestCase):
     """Test case for it."""
 
-    @staticmethod
-    def valid_path(some_file):
-        import os
-        return ((not some_file.endswith('m') and len(some_file) > 5)
-                and not some_file.endswith('-config')
-                and os.path.isfile(some_file)
-                and not os.path.islink(some_file))
-
-    def test_whereis(self):
-        import subprocess
-        import os
-        import itertools
-        import re
-        import collections
-        python_list = [
-            'python',
-            'ironpython',
-            'anaconda',
-            'miniconda',
-            'jython',
-            'micropython',
-            'pypy',
-            'pyston',
-            'stackless',
+    def test_get_versions(self):
+        """Test version search properly."""
+        from hardest.python_searcher import PythonSearcher
+        instance = PythonSearcher()
+        paths = [
+            '/usr/bin/python',
+            '/usr/bin/python2',
+            '/usr/bin/python3',
         ]
+        versions = instance.get_python_versions(paths)
+        for version in versions:
+            print(version.version, version.binaries)
+        self.assertTrue(versions)
 
-        collected = collections.OrderedDict()
-        for python_version in python_list:
-            # python_version = 'pypy'
-            raw_result = subprocess.check_output(['whereis', python_version])
-            raw_result = raw_result.decode()
-            found_python_versions = raw_result.replace(python_version+': ', '')
+    def test_valid_path(self):
+        """Test vinary get valid files list."""
+        from hardest.python_searcher import PythonSearcher
+        instance = PythonSearcher()
+        files = instance.get_valid_files('python')
+        for version in files:
+            print('', version)
+        self.assertTrue(files)
 
-            new_list = [found_path for found_path
-                        in found_python_versions.strip().split(' ')
-                        if self.valid_path(found_path)]
-            if not new_list:
-                continue
-            for ver in new_list:
-                try:
-                    raw_result = subprocess.check_output([ver, '-V'], stderr=subprocess.STDOUT)
-                    raw_result = raw_result.decode()
-                    if not raw_result:
-                        continue
-                    print(raw_result)
-                except subprocess.CalledProcessError:
-                    continue
-
-                py_version = str(python_version)
-                if ver not in raw_result.lower():
-                    py_version = raw_result.split(' ')[0]
-                # version = raw_result
-                raw_result = raw_result.replace('\n', ' ')[:-1]
-                raw_result = re.sub(r'\(.*\) ', '', raw_result)
-                try:
-                    internal_dict = collected[raw_result]
-                    try:
-                        internal_dict[os.path.basename(ver)].append(ver)
-                    except KeyError:
-                        internal_dict[os.path.basename(ver)] = [ver]
-                except KeyError:
-                    collected[raw_result] = collections.OrderedDict()
-                    collected[raw_result][os.path.basename(ver)] = [ver]
-        import json
-        print(json.dumps(collected, indent=4))
-        self.assertEqual('qweqw', '')
+    def test_search(self):
+        """Test full search of versions."""
+        from hardest.python_searcher import PythonSearcher
+        instance = PythonSearcher()
+        found_versions = instance.search()
+        for version in found_versions:
+            print('', version.version)
+            for binar in version.binaries:
+                print('--> ', binar)
+        self.assertTrue(not found_versions)

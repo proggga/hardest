@@ -6,11 +6,14 @@ binaries.
 """
 import os
 
+from itertools import groupby
+from operator import methodcaller
+
 # For Mypy typing
-from typing import List  # noqa pylint: disable=unused-import
-from typing import Union  # noqa pylint: disable=unused-import
-from typing import Dict  # noqa pylint: disable=unused-import
-from typing import Tuple  # noqa pylint: disable=unused-import
+from typing import List      # noqa pylint: disable=unused-import
+from typing import Union     # noqa pylint: disable=unused-import
+from typing import Dict      # noqa pylint: disable=unused-import
+from typing import Tuple     # noqa pylint: disable=unused-import
 
 from subprocess import check_output
 
@@ -34,7 +37,9 @@ class PythonSearcher(object):
 
     def __init__(self):
         # type: () -> None
-        pass
+        """Searcher constructor."""
+        self.found_versions = []  # type: List[PythonVersion]
+        self.bad_versions = []  # type: List[PythonVersion]
 
     def search(self):
         # type: () -> List[PythonVersion]
@@ -42,14 +47,13 @@ class PythonSearcher(object):
         valid_files_list = []  # type: List[str]
         for version_to_search in self.python_search_list:  # type: str
             file_list = self.get_valid_files(version_to_search)
-            if not valid_files_list:
+            if not file_list:
                 continue
             valid_files_list.extend(file_list)
 
-        founded = []  # type: List[PythonVersion]
-        founded = self.get_python_versions(valid_files_list)
+        self.get_python_versions(valid_files_list)
 
-        return founded
+        return self.found_versions
 
     def get_valid_files(self, version_to_search):
         # type: (str) -> List[str]
@@ -76,7 +80,21 @@ class PythonSearcher(object):
     def get_python_versions(self, versions):
         # type: (List[str]) -> List[PythonVersion]
         """Analyze each version of python end get his binary."""
-        return []
+        binaries = [Binary(version) for version in versions]
+        self.found_versions = []
+        self.bad_versions = []
+        sorted_binaries = sorted(binaries, key=methodcaller('version'))
+        groupped_version_iterator = groupby(sorted_binaries,
+                                            key=methodcaller('version'))
+        for str_python_ver, bins_iterator in groupped_version_iterator:
+            python_version = PythonVersion(version=str_python_ver,
+                                           binaries=[bin_inst.path for bin_inst
+                                                     in bins_iterator])
+            if str_python_ver == 'Unknown':
+                self.bad_versions.append(python_version)
+            else:
+                self.found_versions.append(python_version)
+        return self.found_versions
 
 
 class PythonVersion(object):  # pylint: disable=too-few-public-methods
@@ -84,5 +102,6 @@ class PythonVersion(object):  # pylint: disable=too-few-public-methods
 
     def __init__(self, version, binaries):
         # type: (str, List[Binary]) -> None
+        """Python Version constructor."""
         self.version = version
         self.binaries = binaries
