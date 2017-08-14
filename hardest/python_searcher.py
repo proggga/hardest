@@ -72,7 +72,7 @@ class PythonSearcher(object):
         files_set = set(files_list)
         files_set.add(sys.executable)
         return set(filepath for filepath in files_set
-                        if self._valid_path(filepath))
+                   if self._valid_path(filepath))
 
     @staticmethod
     def _valid_path(some_file):
