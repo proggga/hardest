@@ -11,11 +11,11 @@ Should search next python implementations:
     pyston
     stackless
 """
-# import os
+import os
 
 import unittest
 
-# import mock
+import mock
 
 
 class PythonSearcherTestCase(unittest.TestCase):
@@ -25,8 +25,6 @@ class PythonSearcherTestCase(unittest.TestCase):
         """Test version search properly."""
         from hardest.python_searcher import PythonSearcher
         instance = PythonSearcher()
-        # env = os.environ.copy()
-        # # with mock.patch()
         # my_env["PYTHONPATH"] = os.getcwd()+'/tests/bindemo/'
         # my_env["PATH"] = os.getcwd()+'/tests/bindemo/'+ ':' + my_env["PATH"]
         paths = [
@@ -43,10 +41,18 @@ class PythonSearcherTestCase(unittest.TestCase):
         """Test vinary get valid files list."""
         from hardest.python_searcher import PythonSearcher
         instance = PythonSearcher()
-        files = instance.get_valid_files('python')
+        edited_env = os.environ.copy()
+        edited_env['PATH'] = (os.getcwd() +
+                              '/tests/bindemo/:' +
+                              edited_env['PATH'])
+        files = []
+        with mock.patch('hardest.python_searcher.os') as patched:
+            patched.environ.copy.return_value = edited_env
+            files = instance.get_valid_files('python')
+        print(files)
         for version in files:
             print('', version)
-        self.assertTrue(files)
+        self.assertTrue(not files)
 
     def test_search(self):
         """Test full search of versions."""
@@ -57,4 +63,4 @@ class PythonSearcherTestCase(unittest.TestCase):
             print('', version.version)
             for binar in version.binaries:
                 print('--> ', binar)
-        self.assertTrue(not found_versions)
+        self.assertTrue(found_versions)
