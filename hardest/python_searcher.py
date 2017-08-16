@@ -22,6 +22,7 @@ from typing import Any       # noqa pylint: disable=unused-import
 
 from hardest.binary import Binary  # noqa pylint: disable=unused-import
 from hardest.binary_validator import BinaryValidator
+from hardest.interfaces.validator import Validator
 
 
 class PythonSearcher(object):
@@ -40,18 +41,26 @@ class PythonSearcher(object):
         'stackless',
     )  # type: Tuple[str, ...]
 
-    def __init__(self):
-        # type: () -> None
+    def __init__(self,
+                 env=None,  # type: Optional[Dict[str, str]]
+                 validator=None  # type: Optional[Validator]
+                ):  # noqa
+        # type: (...) -> None
         """Searcher constructor."""
+        if not validator:
+            self.validator = BinaryValidator()
+        elif not isinstance(validator, Validator):
+            raise TypeError('Validator is not inherited '
+                            'from "Validator" interface.')
+        else:
+            self.validator = validator
+        if not env:
+            self.env = os.environ.copy()
+        else:
+            self.env = env
+
         self.found_versions = []  # type: List[PythonVersion]
         self.bad_versions = []  # type: List[PythonVersion]
-        self.validator = PythonSearcher.get_validator()
-
-    @staticmethod
-    def get_validator():
-        # type: () -> BinaryValidator
-        """Get new Validator (BinaryValidatorFabric)."""
-        return BinaryValidator()
 
     def search(self):
         # type: () -> List[PythonVersion]
@@ -70,8 +79,7 @@ class PythonSearcher(object):
         # type: (str) -> Set[str]
         """Get binaries path for python versions."""
         command = ['/usr/bin/whereis', version_to_search]  # type: List[str]
-        environment = os.environ.copy()
-        raw_output = check_output(command, env=environment)  # type: bytes
+        raw_output = check_output(command, env=self.env)  # type: bytes
         decoded_output = str(raw_output.decode())  # type: str
         front_unattended_str = '{}:'.format(version_to_search)
         cropped_output = decoded_output.replace(front_unattended_str, '')

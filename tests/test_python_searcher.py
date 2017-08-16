@@ -14,11 +14,11 @@ Should search next python implementations:
 import os
 import unittest
 
+from functools import reduce  # pylint: disable=redefined-builtin
+
 from typing import Dict  # noqa pylint: disable=unused-import
 from typing import Set   # noqa pylint: disable=unused-import
 from typing import List  # noqa pylint: disable=unused-import
-
-import mock  # type: ignore
 
 from hardest.binary_validator import BinaryValidator
 
@@ -35,7 +35,6 @@ class SimpleTestValidator(BinaryValidator):  # noqa pylint: disable=R0903,W0232
         # type: (object) -> bool
         """Validate if in test dir and executable."""
         filename = str(data)
-        print('yoho, data', data)
         if not filename.startswith(self.path):
             return False
         return super(SimpleTestValidator, self).validate(filename)
@@ -53,15 +52,30 @@ class PythonSearcherTestCase(unittest.TestCase):
         self.env['PATH'] = self.binpath + ':' + current_path
         self.evnironpath = ('hardest.python_searcher'
                             '.os.environ')  # type: str
-        self.validcheck_path = ('hardest.python_searcher'
-                                '.PythonSearcher.get_validator')  # type: str
+        self.validator = SimpleTestValidator(self.binpath)
+
+    def test_construtor_without_args(self):
+        # type: () -> None
+        """Test constuctor without params."""
+        import hardest.python_searcher as pysearch
+        instance = pysearch.PythonSearcher()
+        some_env = os.environ.copy()
+        self.assertEqual(instance.env, some_env)
+
+    def test_constr_bad_validator(self):
+        # type: () -> None
+        """Test constuctor with bad validator."""
+        import hardest.python_searcher as pysearch
+        with self.assertRaises(TypeError):
+            pysearch.PythonSearcher(validator='Some string, not validator.')
 
     def test_get_versions(self):
         # type: () -> None
         """Test get_python_versions search my python bins."""
-        import hardest.python_searcher
+        import hardest.python_searcher as pysearch
 
-        instance = hardest.python_searcher.PythonSearcher()
+        instance = pysearch.PythonSearcher(env=self.env,
+                                           validator=self.validator)
 
         test_versions = {}  # type: Dict[str, str]
         test_versions = {
@@ -70,13 +84,11 @@ class PythonSearcherTestCase(unittest.TestCase):
             self.binpath + 'jython9.1': 'Jython test.9.1',
             self.binpath + 'anaconda': 'Anaconda test.3.1',
         }
+        bad_version = self.binpath + 'raisecode'
         versions = list(test_versions.keys())
-        found_vers = []  # type: List[hardest.python_searcher.PythonVersion]
-        with mock.patch(self.evnironpath) as envpatch:  # type: ignore
-            envpatch.copy.return_value = self.env  # type: ignore
-            with mock.patch(self.validcheck_path) as getval:
-                getval.return_value = SimpleTestValidator(self.binpath)
-                found_vers = instance.get_python_versions(versions)
+        versions.append(bad_version)
+        found_vers = []  # type: List[pysearch.PythonVersion]
+        found_vers = instance.get_python_versions(versions)
         should_be_values = test_versions.values()
         for pyver in found_vers:
             if pyver.version in should_be_values:
@@ -87,46 +99,34 @@ class PythonSearcherTestCase(unittest.TestCase):
                     del test_versions[foundbin]
         empty_dict = {}  # type: Dict[str, str]
         self.assertDictEqual(test_versions, empty_dict)
+        self.assertTrue(len(bad_version) >= 1)
+        bad_bins = [ver.binaries for ver in instance.bad_versions]
+        bad_bin_paths = reduce(lambda x, y: x | y, bad_bins)
+        self.assertIn(bad_version, bad_bin_paths)
 
     def test_valid_path(self):
         # type: () -> None
         """Test vinary get valid files list."""
         from hardest.python_searcher import PythonSearcher
-        instance = PythonSearcher()
+        instance = PythonSearcher(env=self.env, validator=self.validator)
         files = set()  # type: Set[str]
-        with mock.patch(self.evnironpath) as patched:  # type: ignore
-            patched.copy.return_value = self.env  # type: ignore
-            with mock.patch(self.validcheck_path) as getval:
-                getval.return_value = SimpleTestValidator(self.binpath)
-                files = instance.get_valid_files('python')
+        files = instance.get_valid_files('python')
         self.assertIn(self.binpath + 'python', files)
         self.assertIn(self.binpath + 'python1.2', files)
 
-        with mock.patch(self.evnironpath) as patched:  # type: ignore
-            with mock.patch(self.validcheck_path) as getval:
-                getval.return_value = SimpleTestValidator(self.binpath)
-                patched.copy.return_value = self.env  # type: ignore
-                files = instance.get_valid_files('jython')
+        files = instance.get_valid_files('jython')
         self.assertIn(self.binpath + 'jython9.1', files)
 
-        with mock.patch(self.evnironpath) as patched:  # type: ignore
-            patched.copy.return_value = self.env  # type: ignore
-            with mock.patch(self.validcheck_path) as getval:
-                getval.return_value = SimpleTestValidator(self.binpath)
-                files = instance.get_valid_files('anaconda')
+        files = instance.get_valid_files('anaconda')
         self.assertIn(self.binpath + 'anaconda', files)
 
     def test_search(self):
         # type: () -> None
         """Test full search of versions."""
         from hardest.python_searcher import PythonSearcher
-        instance = PythonSearcher()
+        instance = PythonSearcher(env=self.env, validator=self.validator)
         found_versions = []
-        with mock.patch(self.evnironpath) as envpatch:  # type:ignore
-            envpatch.copy.return_value = self.env  # type: ignore
-            with mock.patch(self.validcheck_path) as getval:
-                getval.return_value = SimpleTestValidator(self.binpath)
-                found_versions = instance.search()
+        found_versions = instance.search()
 
         test_versions = {}  # type: Dict[str, List[str]]
         test_versions = {
