@@ -59,7 +59,6 @@ class PythonSearcher(object):
         else:
             self.env = env
 
-        print('ENV', self.env)
         self.found_versions = []  # type: List[PythonVersion]
         self.bad_versions = []  # type: List[PythonVersion]
 
@@ -82,23 +81,22 @@ class PythonSearcher(object):
         """Get binaries path for python versions."""
         whereis_bin = '/usr/bin/whereis'
         command = ['which', 'whereis']  # type: List[str]
+        print('ENV', self.env)
         raw_output = check_output(command, env=self.env)  # type: bytes
         decoded_output = str(raw_output.decode())  # type: str
         output = decoded_output.strip()
 
-        print('whereis_bin', whereis_bin, os.path.exists(whereis_bin))
         if output != whereis_bin:
             whereis_bin = output  # pragma: no cover
 
-        print('whereis_bin', whereis_bin, os.path.exists(whereis_bin))
-        command = [whereis_bin, version_to_search]  # type: List[str]
+        command = [whereis_bin, '-l', version_to_search]  # type: List[str]
         raw_output = check_output(command, env=self.env)  # type: bytes
         decoded_output = str(raw_output.decode())  # type: str
         front_unattended_str = '{}:'.format(version_to_search)
         cropped_output = decoded_output.replace(front_unattended_str, '')
         output = cropped_output.strip()
         files_set = set()  # type: Set[str]
-        print('OUTPUT', output)
+        print(output)  # noqa # pylint: disable-all
         if not output:
             return files_set
         files_set |= set(output.split(' '))
