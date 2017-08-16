@@ -116,7 +116,7 @@ class PythonSearcher(object):
         get_version = methodcaller('version')  # type: Callable[[Binary], str]
 
         binaries = []  # type: List[Binary]
-        print(versions)
+        print('versions', versions)
         binaries = [Binary(version) for version in versions]
         sorted_binaries = sorted(binaries, key=get_version)
         grouped_versions = groupby(sorted_binaries,
