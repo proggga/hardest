@@ -1,0 +1,55 @@
+Traceback (most recent call last):
+  File "/home/progga/.atom/packages/python-tools/lib/tools.py", line 84, in watch
+    self._process_request(data)
+  File "/home/progga/.atom/packages/python-tools/lib/tools.py", line 67, in _process_request
+    self._write_response(self._serialize('gotoDef', script.goto_definitions()))
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/api/__init__.py", line 366, in goto_definitions
+    definitions = set(self._prepare_goto(goto_path))
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/api/__init__.py", line 298, in _prepare_goto
+    scopes = self._evaluator.eval_element(eval_stmt)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/cache.py", line 41, in wrapper
+    rv = function(obj, *args, **kwargs)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/__init__.py", line 187, in eval_element
+    types = self.eval_trailer(types, trailer)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/__init__.py", line 257, in eval_trailer
+    new_types += self.find_types(typ, node)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/__init__.py", line 120, in find_types
+    return f.find(scopes, search_global)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/debug.py", line 52, in wrapper
+    result = func(*args, **kwargs)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/finder.py", line 87, in find
+    types = self._names_to_types(names, search_global)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/finder.py", line 233, in _names_to_types
+    new_types = _name_to_types(self._evaluator, name, self.scope)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/cache.py", line 41, in wrapper
+    rv = function(obj, *args, **kwargs)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/finder.py", line 278, in _name_to_types
+    types += _remove_statements(evaluator, typ, name)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/finder.py", line 323, in _remove_statements
+    types += evaluator.eval_statement(stmt, seek_name=name)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/cache.py", line 41, in wrapper
+    rv = function(obj, *args, **kwargs)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/recursion.py", line 23, in run
+    result = func(evaluator, stmt, *args, **kwargs)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/debug.py", line 52, in wrapper
+    result = func(*args, **kwargs)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/__init__.py", line 135, in eval_statement
+    types = self.eval_element(stmt.get_rhs())
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/cache.py", line 41, in wrapper
+    rv = function(obj, *args, **kwargs)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/__init__.py", line 169, in eval_element
+    return self._eval_atom(element)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/__init__.py", line 239, in _eval_atom
+    return self.eval_element(c[1])
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/cache.py", line 41, in wrapper
+    rv = function(obj, *args, **kwargs)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/__init__.py", line 169, in eval_element
+    return self._eval_atom(element)
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/__init__.py", line 247, in _eval_atom
+    return [iterable.Array(self, atom)]
+  File "/home/progga/.atom/packages/python-tools/lib/jedi/evaluate/iterable.py", line 198, in __init__
+    self.type = Array.mapping[atom.children[0]]
+KeyError: <String: u"'hardest.python_searcher'">
+Input:
+{"type":"gotoDef","path":"/home/progga/work/hardest/tests/test_python_searcher.py","source":"\"\"\"Test python_searcher class.\n\nShould search next python implementations:\n    python\n    anaconda\n    ironpython\n    jython\n    micropython\n    miniconda\n    pypy\n    pyston\n    stackless\n\"\"\"\nimport os\nimport unittest\n\nfrom hardest.binary_validator import BinaryValidator\n\nfrom typing import Dict  # noqa pylint: disable=unused-import\nfrom typing import Set   # noqa pylint: disable=unused-import\nfrom typing import List  # noqa pylint: disable=unused-import\n\nimport mock  # type: ignore\n\n\nclass TestValidator(BinaryValidator):  # noqa pragma=nocover pylint: disable=R0903,W0232\n    \"\"\"Validate is binary file is valid.\"\"\"\n\n    def __init__(self, path):\n        # type: (str) -> None\n        \"\"\"Store path for tests.\"\"\"\n        self.path = path\n\n    def validate(self, data):\n        # type: (object) -> bool\n        \"\"\"Validate if in test dir and executable.\"\"\"\n        filename = str(data)\n        if not filename.startswith(self.path):\n            return False\n        return super(TestValidator, self).validate(filename)\n\n\nclass PythonSearcherTestCase(unittest.TestCase):\n    \"\"\"Test case for it.\"\"\"\n\n    def setUp(self):\n        # type: () -> None\n        \"\"\"Create test env for os methods.\"\"\"\n        self.env = os.environ.copy()  # type: Dict[str, str]\n        self.binpath = os.getcwd() + '/tests/bindemo/'  # type: str\n        current_path = self.env.get('PATH', '')  # type: str\n        self.env['PATH'] = self.binpath + ':' + current_path\n        self.evnironpath = 'hardest.python_searcher.os.environ'  # type: str\n        self.validcheck_path = ('hardest.python_searcher'\n                                '.PythonSearcher.get_validator')  # type: str\n\n    def test_get_versions(self):\n        # type: () -> None\n        \"\"\"Test get_python_versions search my python bins.\"\"\"\n        import hardest.python_searcher\n\n        instance = hardest.python_searcher.PythonSearcher()\n\n        test_versions = {}  # type: Dict[str, str]\n        test_versions = {\n            self.binpath + 'python': 'Python test.1.2',\n            self.binpath + 'python1.2': 'Python test.1.2',\n            self.binpath + 'jython9.1': 'Jython test.9.1',\n            self.binpath + 'anaconda': 'Anaconda test.3.1',\n        }\n        versions = list(test_versions.keys())\n        found_vers = []  # type: List[hardest.python_searcher.PythonVersion]\n        with mock.patch(self.evnironpath) as envpatch:  # type:ignore\n            envpatch.copy.return_value = self.env  # type: ignore\n            with mock.patch(self.validcheck_path,\n                            side_effect=self.()):\n                found_vers = instance.get_python_versions(versions)\n        should_be_values = test_versions.values()\n        for pyver in found_vers:\n            if pyver.version in should_be_values:\n                for foundbin in pyver.binaries:\n                    self.assertIn(foundbin, test_versions)\n                    self.assertEqual(pyver.version,\n                                     test_versions[foundbin])\n                    del test_versions[foundbin]\n        empty_dict = {}  # type: Dict[str, str]\n        self.assertDictEqual(test_versions, empty_dict)\n\n    def test_valid_path(self):\n        # type: () -> None\n        \"\"\"Test vinary get valid files list.\"\"\"\n        from hardest.python_searcher import PythonSearcher\n        instance = PythonSearcher()\n        files = set()  # type: Set[str]\n        with mock.patch(self.evnironpath) as patched:  # type: ignore\n            patched.copy.return_value = self.env  # type: ignore\n            with mock.patch(self.validcheck_path,\n                            side_effect=self._patch_test_valid()):\n                files = instance.get_valid_files('python')\n        self.assertIn(self.binpath + 'python', files)\n        self.assertIn(self.binpath + 'python1.2', files)\n\n        with mock.patch(self.evnironpath) as patched:  # type: ignore\n            with mock.patch(self.validcheck_path,\n                            side_effect=self._patch_test_valid()):\n                patched.copy.return_value = self.env  # type: ignore\n                files = instance.get_valid_files('jython')\n        self.assertIn(self.binpath + 'jython9.1', files)\n\n        with mock.patch(self.evnironpath) as patched:  # type: ignore\n            patched.copy.return_value = self.env  # type: ignore\n            with mock.patch(self.validcheck_path,\n                            side_effect=self._patch_test_valid()):\n                files = instance.get_valid_files('anaconda')\n        self.assertIn(self.binpath + 'anaconda', files)\n\n    def test_search(self):\n        # type: () -> None\n        \"\"\"Test full search of versions.\"\"\"\n        from hardest.python_searcher import PythonSearcher\n        instance = PythonSearcher()\n        found_versions = []\n        with mock.patch(self.evnironpath) as envpatch:  # type:ignore\n            envpatch.copy.return_value = self.env  # type: ignore\n            with mock.patch(self.validcheck_path,\n                            side_effect=self._patch_test_valid()):\n                found_versions = instance.search()\n\n        test_versions = {}  # type: Dict[str, List[str]]\n        test_versions = {\n            'Python test.1.2': set((\n                self.binpath + 'python',\n                self.binpath + 'python1.2',\n            )),\n            'Jython test.9.1': set([self.binpath + 'jython9.1']),\n            'Anaconda test.3.1': set([self.binpath + 'anaconda']),\n        }\n        for version, bins in test_versions.items():\n            found = None\n            for pyver in found_versions:\n                if pyver.version == version:\n                    found = pyver\n                    break\n            self.assertTrue(found)\n            self.assertEqual(found.binaries, bins)\n","line":74,"col":40,"project_paths":["/home/progga/work/hardest"]}
+

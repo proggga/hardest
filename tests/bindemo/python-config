@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+echo -n "" >&2
+echo "Python test.1.2" >&1
+exit 0

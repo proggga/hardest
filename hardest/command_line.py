@@ -27,16 +27,18 @@ def main():
     args = parser.parse_args(args=sys.argv[1:])
     # help(args)
     # args_dict = vars(args)  # type: Dict[str, Any]
-    str_dict = {}  # type: Dict[str, str]
-    str_dict = {str(key): str(value)
+    str_dict = {}  # type: Dict[str, Union[str, bool, int]]
+    str_dict = {str(key): value
                 for key, value in vars(args).items()}
     # package_name = 'hardest'
     # resource_path = '/'.join(('templates', 'tox.ini.jn2'))
     #
-    message_text = 'home'
     if str_dict['--hello']:
         message_text = 'world!'
-    success(message_text)
+        failure(message_text)
+    else:
+        message_text = 'home'
+        success(message_text)
 
 
 def success(message):
