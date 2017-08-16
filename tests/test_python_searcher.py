@@ -35,6 +35,7 @@ class SimpleTestValidator(BinaryValidator):  # noqa pylint: disable=R0903,W0232
         # type: (object) -> bool
         """Validate if in test dir and executable."""
         filename = str(data)
+        print('Validate', filename, self.path)
         if not filename.startswith(self.path):
             return False
         return super(SimpleTestValidator, self).validate(filename)

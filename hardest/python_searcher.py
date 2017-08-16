@@ -98,10 +98,12 @@ class PythonSearcher(object):
         cropped_output = decoded_output.replace(front_unattended_str, '')
         output = cropped_output.strip()
         files_set = set()  # type: Set[str]
+        print('OUTPUT', output)
         if not output:
             return files_set
         files_set |= set(output.split(' '))
         files_set.add(sys.executable)
+        print('Set is', files_set)
         valid_paths = set(filepath for filepath in files_set
                           if self.validator.validate(filepath))
         return valid_paths
