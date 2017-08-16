@@ -6,3 +6,4 @@ __pycache__
 *.pyc
 *$py.class
 .mypy_cache
+error.log
