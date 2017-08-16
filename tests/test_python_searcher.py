@@ -50,9 +50,7 @@ class PythonSearcherTestCase(unittest.TestCase):
         self.env = os.environ.copy()  # type: Dict[str, str]
         self.binpath = os.getcwd() + '/tests/bindemo/'  # type: str
         current_path = self.env.get('PATH', '')  # type: str
-        self.env['PATH'] = self.binpath[:-1] + ':' + current_path
-        self.evnironpath = ('hardest.python_searcher'
-                            '.os.environ')  # type: str
+        self.env['PATH'] = current_path + ':' + self.binpath[:-1]
         self.validator = SimpleTestValidator(self.binpath)
 
     def test_construtor_without_args(self):
