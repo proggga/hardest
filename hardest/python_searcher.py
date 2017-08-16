@@ -69,6 +69,7 @@ class PythonSearcher(object):
         valid_files_list = set()  # type: Set[str]
         for version_to_search in self.python_search_list:  # type: str
             files = self.get_valid_files(version_to_search)
+            print("FILES", files)
             if not files:
                 continue
             valid_files_list.update(set(files))
@@ -113,6 +114,7 @@ class PythonSearcher(object):
         get_version = methodcaller('version')  # type: Callable[[Binary], str]
 
         binaries = []  # type: List[Binary]
+        print(versions)
         binaries = [Binary(version) for version in versions]
         sorted_binaries = sorted(binaries, key=get_version)
         grouped_versions = groupby(sorted_binaries,
@@ -122,6 +124,7 @@ class PythonSearcher(object):
                                            binaries=set(bin_inst.path
                                                         for bin_inst
                                                         in bins_iterator))
+            print(python_version.version, python_version.binaries)
             if str_python_ver == 'Unknown':
                 self.bad_versions.append(python_version)
             else:
