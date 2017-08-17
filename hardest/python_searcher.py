@@ -18,11 +18,13 @@ from typing import Dict      # noqa pylint: disable=unused-import
 from typing import Tuple     # noqa pylint: disable=unused-import
 from typing import Set       # noqa pylint: disable=unused-import
 from typing import Callable  # noqa pylint: disable=unused-import
+from typing import Optional  # noqa pylint: disable=unused-import
 from typing import Any       # noqa pylint: disable=unused-import
 
 from hardest.binary import Binary  # noqa pylint: disable=unused-import
 from hardest.binary_validator import BinaryValidator
 from hardest.interfaces.validator import Validator
+from hardest.python_version import PythonVersion
 
 
 class PythonSearcher(object):
@@ -89,7 +91,7 @@ class PythonSearcher(object):
         if output != whereis_bin:
             whereis_bin = output  # pragma: no cover
 
-        command = [whereis_bin, '-l', version_to_search]  # type: List[str]
+        command = [whereis_bin, version_to_search]  # type: List[str]
         raw_output = check_output(command, env=self.env)  # type: bytes
         decoded_output = str(raw_output.decode())  # type: str
         front_unattended_str = '{}:'.format(version_to_search)
@@ -125,18 +127,8 @@ class PythonSearcher(object):
                                                         for bin_inst
                                                         in bins_iterator))
             print(python_version.version, python_version.binaries)
-            if str_python_ver == 'Unknown':
+            if str_python_ver in ('Unknown', 'Error'):
                 self.bad_versions.append(python_version)
             else:
                 self.found_versions.append(python_version)
         return self.found_versions
-
-
-class PythonVersion(object):  # pylint: disable=too-few-public-methods
-    """Represent python version which was found."""
-
-    def __init__(self, version, binaries):
-        # type: (str, Set[str]) -> None
-        """Python Version constructor."""
-        self.version = version
-        self.binaries = binaries

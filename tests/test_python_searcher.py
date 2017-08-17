@@ -14,7 +14,7 @@ Should search next python implementations:
 import os
 import unittest
 
-from functools import reduce  # pylint: disable=redefined-builtin
+# from functools import reduce  # pylint: disable=redefined-builtin
 
 from typing import Dict  # noqa pylint: disable=unused-import
 from typing import Set   # noqa pylint: disable=unused-import
@@ -65,43 +65,91 @@ class PythonSearcherTestCase(unittest.TestCase):
         # type: () -> None
         """Test constuctor with bad validator."""
         import hardest.python_searcher as pysearch
-        with self.assertRaises(TypeError):
-            pysearch.PythonSearcher(validator='Some string, not validator.')
+        with self.assertRaises(TypeError):  # type: ignore
+            pysearch.PythonSearcher(validator='not validator')  # type: ignore
+
+    def test_python_version_str(self):
+        # type: () -> None
+        """Test version python __str__ method."""
+        from hardest.python_version import PythonVersion
+        bins = {
+            self.binpath + 'python',
+            self.binpath + 'python1.2',
+        }
+        pyver = PythonVersion('Python test.1.2', bins)
+        shouldbe = "v: Python test.1.2 ({})".format(str(bins))
+        self.assertEqual(str(pyver), shouldbe)
+
+    def test_python_version_repr(self):
+        # type: () -> None
+        """Test version python __repr__ method."""
+        from hardest.python_version import PythonVersion
+        bins = {
+            self.binpath + 'python',
+            self.binpath + 'python1.2',
+        }
+        pyver = PythonVersion('Python test.1.2', bins)
+        shouldbe = ("PythonVersion object: Python test.1.2 ({})"
+                    .format(str(bins)))
+        self.assertEqual(repr(pyver), shouldbe)
+
+    def test_python_version_eq(self):
+        # type: () -> None
+        """Test version python __repr__ method."""
+        from hardest.python_version import PythonVersion
+        bins = {
+            self.binpath + 'python',
+            self.binpath + 'python1.2',
+        }
+        pyver1 = PythonVersion('Python test.1.2', bins)
+        self.assertEqual(pyver1, pyver1)
+
+        pyver2 = PythonVersion('Python test.1.2', bins)
+        self.assertEqual(pyver1, pyver2)
+
+        pyver3 = PythonVersion('Python test.1.2', set([]))
+        self.assertNotEqual(pyver1, pyver3)
+
+        pyver4 = PythonVersion('Python test.1.3', bins)
+        self.assertNotEqual(pyver1, pyver4)
+
+        self.assertNotEqual(pyver1, 'some_text')
 
     def test_get_versions(self):
         # type: () -> None
         """Test get_python_versions search my python bins."""
         import hardest.python_searcher as pysearch
+        from hardest.python_version import PythonVersion
 
         instance = pysearch.PythonSearcher(env=self.env,
                                            validator=self.validator)
 
-        test_versions = {}  # type: Dict[str, str]
-        test_versions = {
-            self.binpath + 'python': 'Python test.1.2',
-            self.binpath + 'python1.2': 'Python test.1.2',
-            self.binpath + 'jython9.1': 'Jython test.9.1',
-            self.binpath + 'anaconda': 'Anaconda test.3.1',
+        test_versions_paths = {
+            self.binpath + 'python',
+            self.binpath + 'python1.2',
+            self.binpath + 'jython9.1',
+            self.binpath + 'anaconda',
+            self.binpath + 'raisecode',
         }
-        bad_version = self.binpath + 'raisecode'
-        versions = list(test_versions.keys())
-        versions.append(bad_version)
-        found_vers = []  # type: List[pysearch.PythonVersion]
-        found_vers = instance.get_python_versions(versions)
-        should_be_values = test_versions.values()
-        for pyver in found_vers:
-            if pyver.version in should_be_values:
-                for foundbin in pyver.binaries:
-                    self.assertIn(foundbin, test_versions)
-                    self.assertEqual(pyver.version,
-                                     test_versions[foundbin])
-                    del test_versions[foundbin]
-        empty_dict = {}  # type: Dict[str, str]
-        self.assertDictEqual(test_versions, empty_dict)
-        self.assertTrue(len(bad_version) >= 1)
-        bad_bins = [ver.binaries for ver in instance.bad_versions]
-        bad_bin_paths = reduce(lambda x, y: x | y, bad_bins)
-        self.assertIn(bad_version, bad_bin_paths)
+        test_versions = {
+            PythonVersion('Python test.1.2', {
+                self.binpath + 'python',
+                self.binpath + 'python1.2',
+            }),
+            PythonVersion('Jython test.9.1', {
+                self.binpath + 'jython9.1',
+            }),
+            PythonVersion('Anaconda test.3.1', {
+                self.binpath + 'anaconda',
+            }),
+        }
+        bad_version = PythonVersion('Unknown', {
+            self.binpath + 'raisecode',
+        })
+        found_vers = set(instance.get_python_versions(test_versions_paths))
+        print('test_versions', test_versions, found_vers)
+        self.assertEqual(test_versions & found_vers, test_versions)
+        self.assertIn(bad_version, instance.bad_versions)
 
     def test_valid_path(self):
         # type: () -> None
@@ -123,24 +171,21 @@ class PythonSearcherTestCase(unittest.TestCase):
         # type: () -> None
         """Test full search of versions."""
         from hardest.python_searcher import PythonSearcher
-        instance = PythonSearcher(env=self.env, validator=self.validator)
-        found_versions = []
-        found_versions = instance.search()
+        from hardest.python_searcher import PythonVersion
 
-        test_versions = {}  # type: Dict[str, List[str]]
-        test_versions = {
-            'Python test.1.2': set((
+        instance = PythonSearcher(env=self.env, validator=self.validator)
+        found_versions = set(instance.search())
+
+        test_versions = set((
+            PythonVersion('Python test.1.2', set((
                 self.binpath + 'python',
                 self.binpath + 'python1.2',
-            )),
-            'Jython test.9.1': set([self.binpath + 'jython9.1']),
-            'Anaconda test.3.1': set([self.binpath + 'anaconda']),
-        }
-        for version, bins in test_versions.items():
-            found = None
-            for pyver in found_versions:
-                if pyver.version == version:
-                    found = pyver
-                    break
-            self.assertTrue(found)
-            self.assertEqual(found.binaries, bins)
+            ))),
+            PythonVersion('Jython test.9.1', set((
+                self.binpath + 'jython9.1',
+            ))),
+            PythonVersion('Anaconda test.3.1', set((
+                self.binpath + 'anaconda',
+            ))),
+        ))
+        self.assertEqual(test_versions & found_versions, test_versions)

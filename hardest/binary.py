@@ -30,7 +30,7 @@ class Binary(object):  # pylint: disable=too-few-public-methods
                                       stderr=STDOUT)  # type: ignore
         except CalledProcessError:
             return 'Unknown'
-        except OSError:
+        except OSError:  # type: ignore
             return 'Error'
 
         decoded_result = str(raw_result.decode())  # type: str
@@ -40,3 +40,33 @@ class Binary(object):  # pylint: disable=too-few-public-methods
         stripped_version = decoded_result.strip()
         self._version = stripped_version.replace('\n', ' ')
         return self._version
+
+    def __eq__(self, second_addend):
+        # type: (object) -> bool
+        """Test equality of two binaries."""
+        if not isinstance(second_addend, Binary):
+            return False
+        first_addend = self  # type : Binary
+        equal_path = bool(first_addend.path == second_addend.path)
+        equal_version = bool(first_addend.version() == second_addend.version())
+        return equal_path and equal_version
+
+    def __ne__(self, second_addend):
+        # type: (object) -> bool
+        """Test not equality of two binaries."""
+        return not bool(self == second_addend)
+
+    def __hash__(self):
+        # type: () -> int
+        """Return hash."""
+        return hash(self.path) ^ hash(self.version())
+
+    def __repr__(self):
+        # type: () -> str
+        """Return object representation."""
+        return "Binary obj ({}, {})".format(self.path, self.version())
+
+    def __str__(self):
+        # type: () -> str
+        """Return string representation."""
+        return "{} ({})".format(self.path, self.version())
