@@ -189,3 +189,12 @@ class PythonSearcherTestCase(unittest.TestCase):
             ))),
         ))
         self.assertEqual(test_versions & found_versions, test_versions)
+
+    def test_path_files_searcher(self):
+        # type: () -> None
+        """Test path files."""
+        from hardest.python_searcher import PythonSearcher
+        instance = PythonSearcher(env=self.env, validator=self.validator)
+        data = instance._search_vars_in_path('python')  # pylint: disable-all
+        self.assertIn(self.binpath + 'python', data)
+        self.assertIn(self.binpath + 'python1.2', data)
