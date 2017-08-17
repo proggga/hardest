@@ -1,8 +1,9 @@
 """Main command line options."""
 import sys
 
-from typing import Dict  # noqa pylint: disable=unused-import
-from typing import Any  # noqa pylint: disable=unused-import
+from typing import Dict   # noqa pylint: disable=unused-import
+from typing import Any    # noqa pylint: disable=unused-import
+from typing import Union  # noqa pylint: disable=unused-import
 
 import argparse
 

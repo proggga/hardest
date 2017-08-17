@@ -50,7 +50,7 @@ class PythonSearcher(object):
         # type: (...) -> None
         """Searcher constructor."""
         if not validator:
-            self.validator = BinaryValidator()
+            self.validator = BinaryValidator()  # type: Validator
         elif not isinstance(validator, Validator):
             raise TypeError('Validator is not inherited '
                             'from "Validator" interface.')
@@ -91,9 +91,9 @@ class PythonSearcher(object):
         if output != whereis_bin:
             whereis_bin = output  # pragma: no cover
 
-        command = [whereis_bin, version_to_search]  # type: List[str]
-        raw_output = check_output(command, env=self.env)  # type: bytes
-        decoded_output = str(raw_output.decode())  # type: str
+        command = [whereis_bin, version_to_search]
+        raw_output = check_output(command, env=self.env)
+        decoded_output = str(raw_output.decode())
         front_unattended_str = '{}:'.format(version_to_search)
         cropped_output = decoded_output.replace(front_unattended_str, '')
         output = cropped_output.strip()

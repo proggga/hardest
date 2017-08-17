@@ -1,4 +1,5 @@
 """Python version class."""
+from typing import Set  # noqa pylint: disable=unused-import
 
 
 class PythonVersion(object):  # pylint: disable=too-few-public-methods

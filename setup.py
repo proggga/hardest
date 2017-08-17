@@ -4,7 +4,7 @@
 from setuptools import setup  # type: ignore
 
 setup(name='hardest',
-      version='0.0.1a',
+      version='0.0.1',
       description='Hardcore testing tool',
       author='Mikhail Fesenko',
       author_email='proggga@gmail.com',
