@@ -159,16 +159,17 @@ class PythonSearcherTestCase(unittest.TestCase):
         """Test vinary get valid files list."""
         from hardest.python_searcher import PythonSearcher
         instance = PythonSearcher(env=self.env, validator=self.validator)
-        files = set()  # type: Set[str]
-        files = instance.get_valid_files('python')
-        self.assertIn(self.binpath + 'python', files)
-        self.assertIn(self.binpath + 'python1.2', files)
+        files1 = set()  # type: Set[str]
+        files1 = instance.get_valid_files('python')
+        self.assertIn(self.binpath + 'python', files1)
+        self.assertIn(self.binpath + 'python1.2', files1)
 
-        files = instance.get_valid_files('jython')
-        self.assertIn(self.binpath + 'jython9.1', files)
+        instance = PythonSearcher(env=self.env, validator=self.validator)
+        files2 = instance.get_valid_files('jython')
+        self.assertIn(self.binpath + 'jython9.1', files2)
 
-        files = instance.get_valid_files('anaconda')
-        self.assertIn(self.binpath + 'anaconda', files)
+        files3 = instance.get_valid_files('anaconda')
+        self.assertIn(self.binpath + 'anaconda', files3)
 
     def test_search(self):
         # type: () -> None
