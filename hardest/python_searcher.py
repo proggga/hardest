@@ -103,17 +103,20 @@ class PythonSearcher(object):
         files_set.add(sys.executable)
         valid_paths = set(filepath for filepath in files_set
                           if self.validator.validate(filepath))
-        print('valid_paths1', valid_paths)
+        print('valid_paths1', version_to_search, valid_paths)
         valid_paths |= self._search_vars_in_path(valid_paths,
                                                  version_to_search)
-        print('valid_paths2', valid_paths)
+        print('valid_paths2', version_to_search, valid_paths)
         return valid_paths
 
     def _search_vars_in_path(self,
                              already_found=None,  # type: Optional[Set[str]]
-                             version_to_search='',  # type: str
+                             version_to_search=None,  # type: Optional[str]
                             ):  # noqa
         # type: (...) -> Set[str]
+        if not version_to_search:
+            version_to_search = ''
+        print('search vars in path ', version_to_search)
         if not already_found:
             already_found = set()
         else:
