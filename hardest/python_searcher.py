@@ -154,7 +154,9 @@ class PythonSearcher(object):
         searching = [searchword in filename
                      for searchword in versions]
         if any(searching) and self.validator.validate(filepath):
+            print('Check', filepath)
             return filepath
+        print('Invalid', filepath)
         return ''
 
     def get_python_versions(self, versions):
