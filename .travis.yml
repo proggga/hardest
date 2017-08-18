@@ -1,19 +1,19 @@
 language: python
 python:
-    - "2.7"
-    - "3.6"
+  - "2.7"
+  - "3.6"
 env:
-    - TOX_ENV=metrics
-    - TOX_ENV=lint
-    - TOX_ENV=coverage
-before_install:
-  - pip install --upgrade pytest
-  - pip install six
+  - TOX_ENV=metrics
+  - TOX_ENV=lint
+  - TOX_ENV=coverage
+matrix:
+  include:
+    - python: "3.6"
+      env: TOX_ENV=mypy
 install:
-    - pip install -r requirements.txt
-    - pip install tox
-    - pip install coveralls
+  - pip install tox
+  - pip install coveralls
 script:
-    - tox -e $TOX_ENV-$TRAVIS_PYTHON_VERSION
+  - tox -e $TOX_ENV-$TRAVIS_PYTHON_VERSION
 after_success:
-    - coveralls
+  - coveralls

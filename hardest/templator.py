@@ -4,7 +4,7 @@ from typing import Any  # noqa pylint: disable=unused-import
 from typing import Optional  # noqa pylint: disable=unused-import
 
 import os
-import pkg_resources
+import pkg_resources  # type: ignore
 
 import hardest.exceptions
 import hardest.template
@@ -14,22 +14,26 @@ class Templator(object):
     """Template generator."""
 
     def __init__(self, package_name):
-        """Init constructor."""
         # type: (str) -> None
+        """Templator constructor."""
         self.package_name = package_name  # type: str
 
-    def get_template(self, template_name, context=None):
+    def get_template(self,
+                     template_name,  # type: str
+                     context=None    # type: Dict[str, Any]
+                    ):  # noqa
+        # type: (...) -> hardest.template.Template
         """Render by template_name."""
-        # type: (str, Optional[Dict[str, Any]]) -> str
         if not context:
             context = {}
-        file_path = self.get_template_path(template_name)
+        file_path = self.get_template_path(template_name)  # type: str
         return hardest.template.Template(file_path, context)
 
     def get_template_path(self, template_name):
-        """Get template path."""
         # type: (str) -> str
+        """Get template path."""
         try:
+            file_name = ''  # type: str
             file_name = pkg_resources.resource_filename(self.package_name,
                                                         template_name)
             if os.path.exists(file_name):

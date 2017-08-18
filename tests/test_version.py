@@ -2,7 +2,7 @@
 import unittest
 
 import hardest.command_line as commandline
-import mock
+import mock  # type: ignore
 
 
 class TestUsage(unittest.TestCase):
@@ -27,5 +27,5 @@ class TestUsage(unittest.TestCase):
     def test_command_line_exists2(self):
         """Test command_line entry point import/exists."""
         with self.assertRaises(SystemExit) as sysexit:
-            commandline.main_exit('hello', 0)
+            commandline.main_exit('\nTestHelloMessage', 0)
         self.assertEqual(sysexit.exception.code, 0)
