@@ -102,15 +102,31 @@ class PythonSearcher(object):
         files_set.add(sys.executable)
         valid_paths = set(filepath for filepath in files_set
                           if self.validator.validate(filepath))
-        valid_paths |= self._search_vars_in_path()
+        valid_paths |= self._search_vars_in_path(valid_paths)
         return valid_paths
 
-    def _search_vars_in_path(self):
-        # type: (str) -> Set[str]
+    def _search_vars_in_path(self,
+                             already_found=None  # type: Optional[Set[str]]
+                            ):  # noqa
+        # type: (...) -> Set[str]
+        if not already_found:
+            already_found = set()
+        else:
+            already_found = {os.path.dirname(fil) for fil in already_found}
         path = self.env.get('PATH', '')  # type: str
-        directories = path.split(':')  # type: List[str]
+        directories = set(path.split(':'))  # type: Set[str]
+        directories.difference_update(already_found)
+        files = self._parse_dirs(directories)
+        return files
+
+    def _parse_dirs(self, dirs):
+        # type: (Set[str]) -> Set[str]
         files = set()  # type: Set[str]
-        for directory in directories:
+        for directory in dirs:
+            directory = os.path.realpath(directory)
+            if not os.path.exists(directory):
+                continue
+
             for filename in os.listdir(directory):
                 filepath = ''  # type: str
                 filepath = self._check_for_valid(directory, filename)

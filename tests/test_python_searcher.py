@@ -48,8 +48,13 @@ class PythonSearcherTestCase(unittest.TestCase):
         """Create test env for os methods."""
         self.env = os.environ.copy()  # type: Dict[str, str]
         self.binpath = os.getcwd() + '/tests/bindemo/'  # type: str
+
         current_path = self.env.get('PATH', '')  # type: str
-        self.env['PATH'] = current_path + ':' + self.binpath[:-1]
+        self.env['PATH'] = self.binpath[:-1] + ':' + current_path
+
+        current_path = self.env.get('PATH', '')
+        wrongpath = os.getcwd() + '/not_exist/'  # type: str
+        self.env['PATH'] = wrongpath + ':' + current_path
         self.validator = SimpleTestValidator(self.binpath)
 
     def test_construtor_without_args(self):
