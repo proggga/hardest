@@ -80,6 +80,7 @@ class PythonSearcher(object):
     def get_valid_files(self, version_to_search):
         # type: (str) -> Set[str]
         """Get binaries path for python versions."""
+        print("GET VALID_FILES ", version_to_search)
         whereis_bin = '/usr/bin/whereis'
         command = ['which', 'whereis']  # type: List[str]
         raw_output = check_output(command, env=self.env)  # type: bytes
