@@ -80,7 +80,6 @@ class PythonSearcher(object):
     def get_valid_files(self, version_to_search):
         # type: (str) -> Set[str]
         """Get binaries path for python versions."""
-        print("GET VALID_FILES ", version_to_search)
         whereis_bin = '/usr/bin/whereis'
         command = ['which', 'whereis']  # type: List[str]
         raw_output = check_output(command, env=self.env)  # type: bytes
@@ -102,10 +101,8 @@ class PythonSearcher(object):
             files_set |= set(output.split(' '))
         valid_paths = set(filepath for filepath in files_set
                           if self.validator.validate(filepath))
-        print('valid_paths1', version_to_search, valid_paths)
         valid_paths |= self._search_vars_in_path(valid_paths,
                                                  version_to_search)
-        print('valid_paths2', version_to_search, valid_paths)
         return valid_paths
 
     def _search_vars_in_path(self,
@@ -115,20 +112,18 @@ class PythonSearcher(object):
         # type: (...) -> Set[str]
         if not version_to_search:
             version_to_search = ''
-        print('search vars in path ', version_to_search)
         if not already_found:
             already_found = set()
-        else:
-            already_found = {os.path.dirname(fil) for fil in already_found}
 
         path = self.env.get('PATH', '')  # type: str
         directories = set(path.split(':'))  # type: Set[str]
-        directories.difference_update(already_found)
+        directories.difference_update({os.path.dirname(fil)
+                                       for fil in already_found})
         files = self._parse_dirs(directories, version_to_search)
         return files
 
     def _parse_dirs(self, dirs, version_to_search):
-        # type: (Set[str]) -> Set[str]
+        # type: (Set[str], str) -> Set[str]
         files = set()  # type: Set[str]
         for directory in dirs:
             directory = os.path.realpath(directory)
@@ -145,7 +140,7 @@ class PythonSearcher(object):
         return files
 
     def _check_for_valid(self, directory, filename, version_to_search):
-        # type: (str, str) -> str
+        # type: (str, str, str) -> str
         """Check if we search for it and it's valid."""
         versions = []
         if version_to_search:
@@ -155,11 +150,8 @@ class PythonSearcher(object):
         filepath = os.path.join(directory, filename)
         searching = [searchword in filename
                      for searchword in versions]
-        print('versions', versions)
         if any(searching) and self.validator.validate(filepath):
-            print('Check', filepath)
             return filepath
-        print('Invalid', filepath)
         return ''
 
     def get_python_versions(self, versions):

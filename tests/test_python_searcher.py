@@ -164,7 +164,6 @@ class PythonSearcherTestCase(unittest.TestCase):
         self.assertIn(self.binpath + 'python', files1)
         self.assertIn(self.binpath + 'python1.2', files1)
 
-        instance = PythonSearcher(env=self.env, validator=self.validator)
         files2 = instance.get_valid_files('jython')
         self.assertIn(self.binpath + 'jython9.1', files2)
 
