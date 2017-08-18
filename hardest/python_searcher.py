@@ -153,6 +153,7 @@ class PythonSearcher(object):
         filepath = os.path.join(directory, filename)
         searching = [searchword in filename
                      for searchword in versions]
+        print('versions', versions)
         if any(searching) and self.validator.validate(filepath):
             print('Check', filepath)
             return filepath
