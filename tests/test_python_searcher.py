@@ -35,7 +35,6 @@ class SimpleTestValidator(BinaryValidator):  # noqa pylint: disable=R0903,W0232
         # type: (object) -> bool
         """Validate if in test dir and executable."""
         filename = str(data)
-        print('Validate', filename, self.path)
         if not filename.startswith(self.path):
             return False
         return super(SimpleTestValidator, self).validate(filename)
@@ -147,7 +146,6 @@ class PythonSearcherTestCase(unittest.TestCase):
             self.binpath + 'raisecode',
         })
         found_vers = set(instance.get_python_versions(test_versions_paths))
-        print('test_versions', test_versions, found_vers)
         self.assertEqual(test_versions & found_vers, test_versions)
         self.assertIn(bad_version, instance.bad_versions)
 
@@ -195,6 +193,6 @@ class PythonSearcherTestCase(unittest.TestCase):
         """Test path files."""
         from hardest.python_searcher import PythonSearcher
         instance = PythonSearcher(env=self.env, validator=self.validator)
-        data = instance._search_vars_in_path('python')  # pylint: disable-all
+        data = instance._search_vars_in_path()  # pylint: disable-all
         self.assertIn(self.binpath + 'python', data)
         self.assertIn(self.binpath + 'python1.2', data)

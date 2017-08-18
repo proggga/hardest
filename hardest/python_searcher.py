@@ -70,7 +70,6 @@ class PythonSearcher(object):
         valid_files_list = set()  # type: Set[str]
         for version_to_search in self.python_search_list:  # type: str
             files = self.get_valid_files(version_to_search)
-            print("FILES", files)
             if not files:
                 continue
             valid_files_list.update(set(files))
@@ -83,7 +82,6 @@ class PythonSearcher(object):
         """Get binaries path for python versions."""
         whereis_bin = '/usr/bin/whereis'
         command = ['which', 'whereis']  # type: List[str]
-        print('ENV', self.env)
         raw_output = check_output(command, env=self.env)  # type: bytes
         decoded_output = str(raw_output.decode())  # type: str
         output = decoded_output.strip()
@@ -98,29 +96,37 @@ class PythonSearcher(object):
         cropped_output = decoded_output.replace(front_unattended_str, '')
         output = cropped_output.strip()
         files_set = set()  # type: Set[str]
-        print(output)  # noqa # pylint: disable-all
         if not output:
             return files_set
         files_set |= set(output.split(' '))
         files_set.add(sys.executable)
-        print('Set is', files_set)
         valid_paths = set(filepath for filepath in files_set
                           if self.validator.validate(filepath))
+        valid_paths |= self._search_vars_in_path()
         return valid_paths
 
-    def _search_vars_in_path(self, version):
-        # type: (str) -> List[str]
-        import glob
-        path = self.env.get('PATH', '')
-        directories = path.split(':')
-        files = []  # type: List[str]
-        print('directoriesdirectoriesdirectories', directories)
+    def _search_vars_in_path(self):
+        # type: (str) -> Set[str]
+        path = self.env.get('PATH', '')  # type: str
+        directories = path.split(':')  # type: List[str]
+        files = set()  # type: Set[str]
         for directory in directories:
-            search_pattern = directory + '/' + '*{}*'.format(version)
-            files.extend([filepath for filepath in glob.glob(search_pattern)
-                          if (os.path.isfile(filepath) and
-                              os.access(filepath, os.X_OK))])
+            for filename in os.listdir(directory):
+                filepath = ''  # type: str
+                filepath = self._check_for_valid(directory, filename)
+                if filepath:
+                    files.add(filepath)
         return files
+
+    def _check_for_valid(self, directory, filename):
+        # type: (str, str) -> str
+        """Check if we search for it and it's valid."""
+        filepath = os.path.join(directory, filename)
+        searching = [searchword in filename
+                     for searchword in self.python_search_list]
+        if any(searching) and self.validator.validate(filepath):
+            return filepath
+        return ''
 
     def get_python_versions(self, versions):
         # type: (Union[List[str], Set[str]]) -> List[PythonVersion]
@@ -130,7 +136,6 @@ class PythonSearcher(object):
         get_version = methodcaller('version')  # type: Callable[[Binary], str]
 
         binaries = []  # type: List[Binary]
-        print('versions', versions)
         binaries = [Binary(version) for version in versions]
         sorted_binaries = sorted(binaries, key=get_version)
         grouped_versions = groupby(sorted_binaries,
@@ -140,7 +145,6 @@ class PythonSearcher(object):
                                            binaries=set(bin_inst.path
                                                         for bin_inst
                                                         in bins_iterator))
-            print(python_version.version, python_version.binaries)
             if str_python_ver in ('Unknown', 'Error'):
                 self.bad_versions.append(python_version)
             else:
