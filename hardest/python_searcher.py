@@ -98,28 +98,34 @@ class PythonSearcher(object):
         files_set = set()  # type: Set[str]
         if not output:
             return files_set
+        print('files_set', files_set)
         files_set |= set(output.split(' '))
         files_set.add(sys.executable)
         valid_paths = set(filepath for filepath in files_set
                           if self.validator.validate(filepath))
-        valid_paths |= self._search_vars_in_path(valid_paths)
+        print('valid_paths1', valid_paths)
+        valid_paths |= self._search_vars_in_path(valid_paths,
+                                                 version_to_search)
+        print('valid_paths2', valid_paths)
         return valid_paths
 
     def _search_vars_in_path(self,
-                             already_found=None  # type: Optional[Set[str]]
+                             already_found=None,  # type: Optional[Set[str]]
+                             version_to_search='',  # type: str
                             ):  # noqa
         # type: (...) -> Set[str]
         if not already_found:
             already_found = set()
         else:
             already_found = {os.path.dirname(fil) for fil in already_found}
+
         path = self.env.get('PATH', '')  # type: str
         directories = set(path.split(':'))  # type: Set[str]
         directories.difference_update(already_found)
-        files = self._parse_dirs(directories)
+        files = self._parse_dirs(directories, version_to_search)
         return files
 
-    def _parse_dirs(self, dirs):
+    def _parse_dirs(self, dirs, version_to_search):
         # type: (Set[str]) -> Set[str]
         files = set()  # type: Set[str]
         for directory in dirs:
@@ -129,17 +135,24 @@ class PythonSearcher(object):
 
             for filename in os.listdir(directory):
                 filepath = ''  # type: str
-                filepath = self._check_for_valid(directory, filename)
+                filepath = self._check_for_valid(directory,
+                                                 filename,
+                                                 version_to_search)
                 if filepath:
                     files.add(filepath)
         return files
 
-    def _check_for_valid(self, directory, filename):
+    def _check_for_valid(self, directory, filename, version_to_search):
         # type: (str, str) -> str
         """Check if we search for it and it's valid."""
+        versions = []
+        if version_to_search:
+            versions.append(version_to_search)
+        else:
+            versions.extend(self.python_search_list)
         filepath = os.path.join(directory, filename)
         searching = [searchword in filename
-                     for searchword in self.python_search_list]
+                     for searchword in versions]
         if any(searching) and self.validator.validate(filepath):
             return filepath
         return ''
