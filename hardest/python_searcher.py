@@ -20,6 +20,7 @@ from typing import Set       # noqa pylint: disable=unused-import
 from typing import Callable  # noqa pylint: disable=unused-import
 from typing import Optional  # noqa pylint: disable=unused-import
 from typing import Any       # noqa pylint: disable=unused-import
+from typing import Iterable  # noqa pylint: disable=unused-import
 
 from hardest.binary import Binary  # noqa pylint: disable=unused-import
 from hardest.binary_validator import BinaryValidator
@@ -30,7 +31,7 @@ from hardest.python_version import PythonVersion
 class PythonSearcher(object):
     """Seach Python version for you."""
 
-    python_search_list = (
+    python_implementations = (
         'python',
         'ironpython',
         'conda',
@@ -65,19 +66,37 @@ class PythonSearcher(object):
         self.bad_versions = []  # type: List[PythonVersion]
 
     def search(self):
-        # type: () -> Dict[str, PythonVersion]
+        # type: () -> Dict[str, List[PythonVersion]]
         """Search python versino and return list of versions."""
-        valid_files_list = set()  # type: Set[str]
-        for version_to_search in self.python_search_list:  # type: str
-            files = self.get_valid_files(version_to_search)
-            if not files:
-                continue
-            valid_files_list.update(set(files))
-        self.get_python_versions(valid_files_list)
+        files = self.get_files_from_env()  # type: List[str]
+        valid_files = self.get_valid_files(files)  # type: List[str]
+        versions = self.get_versions(valid_files)  # type: List[PythonVersion]
+        shortnames = self.get_shortnames(versions)  # type: List[str]
+        result = {}  # type: Dict[str, List[PythonVersion]]
+        result = self.associate(shortnames, versions)
+        return result
 
-        return self.found_versions
+    def get_files_from_env(self):  # pylint: disable=no-self-use
+        # type: () -> List[str]
+        """Retrun files from system by env PATH var."""
+        found_files = []  # type: List[str]
+        return found_files
 
-    def get_valid_files(self, version_to_search):
+    def get_valid_files(self, list_of_files):  # pylint: disable=no-self-use
+        # type: (Iterable[str]) -> List[str]
+        """Retrun files which valid by validator."""
+        valid_files = list(list_of_files)  # type: List[str]
+        return valid_files
+
+    def get_versions(self, valid_files):  # pylint: disable=no-self-use
+        # type: (Iterable[str]) -> List[str]
+        """Retrun files which valid by validator."""
+        versions = List[PythonVersion]
+        for one_file in valid_files:
+            versions.append(PythonVersion(one_file, []))
+        return valid_files
+
+    def get_valid_files(self, version_to_search):  # pragma: no cover
         # type: (str) -> Set[str]
         """Get binaries path for python versions."""
         whereis_bin = '/usr/bin/whereis'
@@ -108,7 +127,7 @@ class PythonSearcher(object):
     def _search_vars_in_path(self,
                              already_found=None,  # type: Optional[Set[str]]
                              version_to_search=None,  # type: Optional[str]
-                            ):  # noqa
+                            ):  # noqa # pragma: no cover
         # type: (...) -> Set[str]
         if not version_to_search:
             version_to_search = ''
@@ -117,12 +136,13 @@ class PythonSearcher(object):
 
         path = self.env.get('PATH', '')  # type: str
         directories = set(path.split(':'))  # type: Set[str]
-        directories.difference_update({os.path.dirname(fil)
-                                       for fil in already_found})
+        dir_names = set()  # type: Set[str]
+        dir_names = {os.path.dirname(fil) for fil in already_found}
+        directories.difference_update(dir_names)
         files = self._parse_dirs(directories, version_to_search)
         return files
 
-    def _parse_dirs(self, dirs, version_to_search):
+    def _parse_dirs(self, dirs, version_to_search):  # pragma: no cover
         # type: (Set[str], str) -> Set[str]
         files = set()  # type: Set[str]
         for directory in dirs:
@@ -139,14 +159,15 @@ class PythonSearcher(object):
                     files.add(filepath)
         return files
 
-    def _check_for_valid(self, directory, filename, version_to_search):
+    def _check_for_valid(self, directory, filename,
+                         version_to_search):  # pragma: no cover
         # type: (str, str, str) -> str
         """Check if we search for it and it's valid."""
         versions = []
         if version_to_search:
             versions.append(version_to_search)
         else:
-            versions.extend(self.python_search_list)
+            versions.extend(self.python_implementations)
         filepath = os.path.join(directory, filename)
         searching = [searchword in filename
                      for searchword in versions]
@@ -154,7 +175,7 @@ class PythonSearcher(object):
             return filepath
         return ''
 
-    def get_python_versions(self, versions):
+    def get_python_versions(self, versions):  # pragma: no cover
         # type: (Union[List[str], Set[str]]) -> List[PythonVersion]
         """Analyze each version of python end get his binary."""
         self.found_versions = []  # type: List[PythonVersion]
