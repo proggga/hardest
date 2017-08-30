@@ -65,7 +65,7 @@ class PythonSearcher(object):
         self.bad_versions = []  # type: List[PythonVersion]
 
     def search(self):
-        # type: () -> List[PythonVersion]
+        # type: () -> Dict[str, PythonVersion]
         """Search python versino and return list of versions."""
         valid_files_list = set()  # type: Set[str]
         for version_to_search in self.python_search_list:  # type: str
