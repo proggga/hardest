@@ -19,8 +19,30 @@ class Binary(object):  # pylint: disable=too-few-public-methods
         # type: () -> str
         """Return version, by trying to get from binary."""
         if not self._version:
-            return self._get_version()
+            version = self._get_version()
+            self._version = version
+            if version not in ('Unknown', 'Error'):
+                self._update_path()
         return self._version
+
+    def _update_path(self):
+        # type: () -> None
+        """GetPath."""
+        binary_output = b''  # type: bytes
+        try:
+            argx = [self.path,
+                    '-c',
+                    'import sys; print(sys.executable)'
+                   ]
+            binary_output = check_output(argx, stderr=STDOUT,)  # type: ignore
+        except CalledProcessError:
+            return
+        except OSError:  # type: ignore
+            return
+        path = str(binary_output.decode()).strip()
+        print('path', path)
+        if path and self.path != path:
+            self.path = path
 
     def _get_version(self):
         # type: () -> str
@@ -38,8 +60,8 @@ class Binary(object):  # pylint: disable=too-few-public-methods
             return 'Unknown'
 
         stripped_version = decoded_result.strip()
-        self._version = stripped_version.replace('\n', ' ')
-        return self._version
+        result = stripped_version.replace('\n', ' ')
+        return result
 
     def __eq__(self, second_addend):
         # type: (object) -> bool

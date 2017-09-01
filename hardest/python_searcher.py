@@ -69,31 +69,33 @@ class PythonSearcher(object):
         # type: () -> Dict[str, List[PythonVersion]]
         """Search python versino and return list of versions."""
         files = self.get_files_from_env()  # type: List[str]
-        valid_files = self.get_valid_files(files)  # type: List[str]
-        versions = self.get_versions(valid_files)  # type: List[PythonVersion]
-        shortnames = self.get_shortnames(versions)  # type: List[str]
-        result = {}  # type: Dict[str, List[PythonVersion]]
-        result = self.associate(shortnames, versions)
-        return result
+        valid_files = self.get_validated_files(files)  # type: List[str]
+        shortnames_list = {}  # type: Dict[str, List[PythonVersion]]
+        shortnames_list = PythonVersion.get_binaries(valid_files)
+        return shortnames_list
 
     def get_files_from_env(self):  # pylint: disable=no-self-use
         # type: () -> List[str]
         """Retrun files from system by env PATH var."""
         found_files = []  # type: List[str]
+        path_variable = os.environ.get('PATH', '')
+        if path_variable:
+            dir_list = [os.path.realpath(dirname) for dirname
+                        in path_variable.split(':')
+                        if os.path.exists(dirname)]
+            for dirname in dir_list:
+                for filename in os.listdir(dirname):
+                    filepath = ''  # type: str
+                    filepath = self._check_for_valid(dirname,
+                                                     filename)
+                    if filepath:
+                        found_files.append(filepath)
         return found_files
 
-    def get_valid_files(self, list_of_files):  # pylint: disable=no-self-use
+    def get_validated_files(self, files):  # pylint: disable=no-self-use
         # type: (Iterable[str]) -> List[str]
         """Retrun files which valid by validator."""
-        valid_files = list(list_of_files)  # type: List[str]
-        return valid_files
-
-    def get_versions(self, valid_files):  # pylint: disable=no-self-use
-        # type: (Iterable[str]) -> List[str]
-        """Retrun files which valid by validator."""
-        versions = List[PythonVersion]
-        for one_file in valid_files:
-            versions.append(PythonVersion(one_file, []))
+        valid_files = list(files)  # type: List[str]
         return valid_files
 
     def get_valid_files(self, version_to_search):  # pragma: no cover
@@ -160,8 +162,8 @@ class PythonSearcher(object):
         return files
 
     def _check_for_valid(self, directory, filename,
-                         version_to_search):  # pragma: no cover
-        # type: (str, str, str) -> str
+                         version_to_search=None):  # pragma: no cover
+        # type: (str, str, Optional[str]) -> str
         """Check if we search for it and it's valid."""
         versions = []
         if version_to_search:
