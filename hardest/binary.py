@@ -8,9 +8,10 @@ from subprocess import STDOUT
 class Binary(object):  # pylint: disable=too-few-public-methods
     """Represent Binary structure."""
 
-    def __init__(self, path):
+    def __init__(self, path, env=None):
         # type: (str) -> None
         """Binary constructor."""
+        self.env = env
         self.executable = os.path.basename(path)  # type: str
         self.path = path                          # type: str
         self._version = ''                        # type: str
@@ -32,24 +33,22 @@ class Binary(object):  # pylint: disable=too-few-public-methods
         try:
             argx = [self.path,
                     '-c',
-                    'import sys; print(sys.executable)'
-                   ]
-            binary_output = check_output(argx, stderr=STDOUT,)  # type: ignore
+                    'import sys; print(sys.executable)']
+            binary_output = check_output(argx, stderr=STDOUT, env=self.env)
         except CalledProcessError:
             return
         except OSError:  # type: ignore
             return
-        path = str(binary_output.decode()).strip()
-        print('path', path)
-        if path and self.path != path:
-            self.path = path
+        new_path = str(binary_output.decode()).strip()
+        if new_path and self.path != new_path and os.path.exists(new_path):
+            self.path = new_path
 
     def _get_version(self):
         # type: () -> str
         raw_result = b''  # type: bytes
         try:
             raw_result = check_output([self.path, '-V'],
-                                      stderr=STDOUT)  # type: ignore
+                                      stderr=STDOUT, env=self.env)
         except CalledProcessError:
             return 'Unknown'
         except OSError:  # type: ignore
