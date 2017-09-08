@@ -99,7 +99,7 @@ class PythonSearcher(object):
         result_files = OrderedDict()  # type: List[str]
         path_variable = self.env.get('PATH', '')
         if path_variable:
-            filtered_dirs = filter(lambda x: os.path.exists(x),
+            filtered_dirs = filter(os.path.exists,
                                    path_variable.split(':'))
             dir_list = [os.path.realpath(dirname) for dirname
                         in filtered_dirs]

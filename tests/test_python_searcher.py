@@ -85,11 +85,12 @@ class PythonSearcherTestCase(unittest.TestCase):
 
         instance = pysearch.PythonSearcher(env=self._get_prepared_env())
 
-        actual_data = instance.search()  # Dict[str, Any]
+        binaries = instance.search()  # Dict[str, Any]
 
-        self.assertEquals(actual_data['python'][0].path,
+        default_binary = 0
+        self.assertEqual(binaries['python'][default_binary].path,
                           self.testpath + 'python')
-        self.assertEquals(actual_data['python1.2'][0].path,
+        self.assertEqual(binaries['python1.2'][default_binary].path,
                           self.testpath + 'python1.2')
 
     def test_search_get_valid_default_reversed(self):
@@ -102,7 +103,8 @@ class PythonSearcherTestCase(unittest.TestCase):
 
         actual_data = instance.search()  # Dict[str, Any]
 
-        self.assertEquals(actual_data['python'][0].path,
+        default_binary = 0
+        self.assertEqual(actual_data['python'][default_binary].path,
                           self.external_path + 'python')
-        self.assertEquals(actual_data['python1.2'][0].path,
+        self.assertEqual(actual_data['python1.2'][default_binary].path,
                           self.testpath + 'python1.2')
