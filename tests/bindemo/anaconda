@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 echo -n "" >&2
-if [ $1 == "-c" ] ; then
+if [ "$1" = "-c" ] ; then
     echo "/home/progga/work/hardest/tests/bindemo/anaconda";
-else
+elif [ "$1" = "-V" ] ; then
     echo "Anaconda test.3.1" >&1
 fi
 exit 0

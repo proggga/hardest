@@ -33,7 +33,7 @@ class PythonSearcherTestCase(unittest.TestCase):
         self.external_path = self.testpath + 'another/'   # type: str
         self.wrongpath = cwd + '/not_exist'              # type: str
 
-        self.test_list = {}  # type: Dict[str, List[PythonVersion]]
+        self.test_list = {}  # type: Dict[str, List[str]]
         self.test_list = {
             'python': [],
             'python1.2': [],
@@ -54,7 +54,7 @@ class PythonSearcherTestCase(unittest.TestCase):
         if reverse:
             path_list = list(reversed(path_list))
 
-        path_list.append('/usr/bin/')
+        path_list.extend(['/bin/', '/usr/bin/'])
 
         env = dict(self._env_original)  # type: Dict[str, str]
         # env_path = env.get('PATH', '')  # type: str
@@ -69,16 +69,15 @@ class PythonSearcherTestCase(unittest.TestCase):
         import hardest.python_searcher as pysearch
 
         instance = pysearch.PythonSearcher(env=self._get_prepared_env())
-        expected = dict(self.test_list)  # type: Dict[str, List[PythonVersion]]
+        expected = dict(self.test_list)  # type: Dict[str, List[str]]
         expected_keys = set(expected.keys())
 
         actual_data = instance.search()  # Dict[str, Any]
         actual_keys = set(actual_data.keys())  # type: ignore
 
-        print("actual_data", actual_data)
         self.assertEqual(expected_keys & actual_keys, expected_keys)
 
-    def test_search_get_valid_default_from_path(self):
+    def test_search_from_path(self):
         # type: () -> None
         """Test get_python_versions search my python bins in valid order."""
         import hardest.python_searcher as pysearch
@@ -89,11 +88,11 @@ class PythonSearcherTestCase(unittest.TestCase):
 
         default_binary = 0
         self.assertEqual(binaries['python'][default_binary].path,
-                          self.testpath + 'python')
+                         self.testpath + 'python')
         self.assertEqual(binaries['python1.2'][default_binary].path,
-                          self.testpath + 'python1.2')
+                         self.testpath + 'python1.2')
 
-    def test_search_get_valid_default_reversed(self):
+    def test_search_from_path_reversed(self):
         # type: () -> None
         """Test get_python_versions search my python bins in valid order."""
         import hardest.python_searcher as pysearch
@@ -105,6 +104,6 @@ class PythonSearcherTestCase(unittest.TestCase):
 
         default_binary = 0
         self.assertEqual(actual_data['python'][default_binary].path,
-                          self.external_path + 'python')
+                         self.external_path + 'python')
         self.assertEqual(actual_data['python1.2'][default_binary].path,
-                          self.testpath + 'python1.2')
+                         self.testpath + 'python1.2')

@@ -46,7 +46,7 @@ class PythonSearcher(object):
                 ):  # noqa
         # type: (...) -> None
         """Searcher constructor."""
-        if not validator:
+        if validator is None:
             self.validator = BinaryValidator()  # type: Validator
         elif not isinstance(validator, Validator):
             raise TypeError('Validator is not inherited '
@@ -82,7 +82,6 @@ class PythonSearcher(object):
                     default_binary = Binary(filename, env=self.env)
                     if (default_binary.version() not in
                             ('Unknown', 'Error')):
-                        print('add default', default_binary)
                         result[filename].append(default_binary)
                     if binary != default_binary:
                         result[filename].append(binary)
@@ -104,7 +103,6 @@ class PythonSearcher(object):
             dir_list = [os.path.realpath(dirname) for dirname
                         in filtered_dirs]
             for dirname in dir_list:
-                print(dirname)
                 file_filter = self._valid_filename_in(dirname)
                 filtered_files = filter(file_filter, os.listdir(dirname))
                 for filename in filtered_files:
